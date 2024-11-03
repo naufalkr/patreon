@@ -8,6 +8,14 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    name: 'Welcome',
+    components: {
+      // NavBar,
+      default: () => import(/* webpackChunkName: "about" */ '../views/Welcome.vue')
+    }
+  },  
+  {
+    path: '/home',
     name: 'Home',
     components: {
       NavBar,

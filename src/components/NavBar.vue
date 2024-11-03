@@ -268,7 +268,7 @@ export default {
       {
         header: null,
         pages: [
-          { title: 'Home', link: '/', icon: 'mdi-home' },
+          { title: 'Home', link: '/Home', icon: 'mdi-home' },
           { title: 'Explore', link: '/explore', icon: 'mdi-magnify' },
           {
             title: 'Subscriptions',
