@@ -49,12 +49,12 @@ const routes = [
     // meta: { requiresVisitor: true }
   },
   {
-    path: '/trending',
-    name: 'Trending',
+    path: '/explore',
+    name: 'Explore',
     components: {
       NavBar,
       default: () =>
-        import(/* webpackChunkName: "trending" */ '../views/Trending.vue')
+        import(/* webpackChunkName: "explore" */ '../views/Explore.vue')
     }
   },
   {
@@ -89,11 +89,11 @@ const routes = [
     // meta: { requiresAuth: true }
   },
   {
-    path: '/channels/:id',
+    path: '/channels',
     components: {
       NavBar,
       default: () =>
-        import(/* webpackChunkName: "dashboard" */ '../views/Channel/Index.vue')
+        import(/* webpackChunkName: "dashboard" */ '../views/Channel/Home.vue')
     },
     children: [
       {

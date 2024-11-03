@@ -1,7 +1,7 @@
 <template>
   <nav id="navbar">
     <!-- NAVBAR -->    
-    <v-app-bar style="background-color: #070707;" flat app clipped-left>
+    <v-app-bar style="background-color: #131313;" flat app clipped-left>
       
       <!-- Spacers to align items in the navbar -->
       <v-spacer></v-spacer>
@@ -52,7 +52,9 @@
         router
         to="/signin"
       >
+        <!-- <v-icon left size="26">mdi-account-plus</v-icon> Sign in -->
         <v-icon left size="26">mdi-account-plus</v-icon> Sign in
+
       </v-btn>
 
       <!-- User Menu for Authenticated Users -->
@@ -122,7 +124,7 @@
     </v-app-bar>
 
     <!-- SIDEBAR -->
-    <v-navigation-drawer app id="nav" style="background-color: #383838">
+    <v-navigation-drawer app id="nav" style="background-color: #252525">
       <div tag="div" class="v-navigation-drawer__content" v-bar>
         <v-list dense nav class="py-0" tag="div">
           <v-list-item>
@@ -139,6 +141,7 @@
             </v-toolbar-title>
           </v-list-item>
           <v-divider></v-divider>
+          
           <div v-for="parentItem in items" :key="parentItem.header">
             <!-- Subheader for different sections -->
             <v-subheader style="color: #f4efe1;"
@@ -161,8 +164,15 @@
               exact
               active-class="active-item"
             >
+
+              <!-- UPLOAD ICON DAN IMAGE -->
               <v-list-item-icon v-if="parentItem.header !== 'Subscriptions'">
-                <v-icon style="color: #f4efe1;">{{ item.icon }}</v-icon>
+                 <template v-if="item.image">
+                    <img :src="item.image" alt="icon" style="width: 24px; height: 24px;" />
+                </template>
+                <template v-else>
+                    <v-icon style="color: #f4efe1;">{{ item.icon }}</v-icon>
+                </template>
               </v-list-item-icon>
               <v-list-item-avatar v-else class="mr-5">
                 {{ i }}
@@ -186,6 +196,8 @@
                   </v-avatar>
                 </template>
               </v-list-item-avatar>
+
+              <!-- TEXT DI SIDEBAR -->
               <v-list-item-content style="color: #f4efe1;">
                 <v-list-item-title class="font-weight-medium subtitle-2">{{
                   parentItem.header === 'Subscriptions'
@@ -257,7 +269,7 @@ export default {
         header: null,
         pages: [
           { title: 'Home', link: '/', icon: 'mdi-home' },
-          { title: 'Trending', link: '/trending', icon: 'mdi-fire' },
+          { title: 'Explore', link: '/explore', icon: 'mdi-magnify' },
           {
             title: 'Subscriptions',
             link: '/subscriptions',
@@ -273,11 +285,11 @@ export default {
           //   link: '#l',
           //   icon: 'mdi-play-box-multiple'
           // },
-          {
-            title: 'History',
-            link: '/history',
-            icon: 'mdi-history'
-          },
+          // {
+          //   title: 'History',
+          //   link: '/history',
+          //   icon: 'mdi-history'
+          // },
           // {
           //   title: 'Your videos',
           //   link: '#yv',
@@ -291,7 +303,7 @@ export default {
           // },
 
           {
-            title: 'Liked videos',
+            title: 'Liked posts',
             link: '/liked-videos',
             icon: 'mdi-thumb-up'
           }
@@ -323,27 +335,32 @@ export default {
         ]
       },
       {
-        header: 'MORE FROM PATREON',
+        header: 'Memberships',
         pages: [
           {
-            title: 'Patreon Premium',
-            link: '#vp',
-            icon: 'mdi-youtube'
+            title: 'Pierson Wodzynski',
+            link: '#Pi',
+            image: 'https://i.pinimg.com/736x/55/52/dd/5552dd66ab991e3b25275719d45d59ab.jpg'
           },
           {
-            title: 'Gaming',
-            link: '#g',
-            icon: 'mdi-youtube-gaming'
+            title: 'The New Boston',
+            link: '#tn',
+            image: 'https://yt3.googleusercontent.com/ytc/AIdro_luVhNF6yTdaq1SHoMmVoBAYcvUZkOBsXfEnuwcGf-G4y8=s160-c-k-c0x00ffffff-no-rj'
           },
           {
-            title: 'Live',
-            link: '#li',
-            icon: 'mdi-access-point'
-          }
+            title: 'Net Ninja',
+            link: '#nn',
+            image: 'https://i.pinimg.com/564x/66/83/3d/66833db3c1610f83ca05515453167e81.jpg'
+          },
+          {
+            title: 'Chris Hawks',
+            link: '#ch',
+            image: 'https://i.pinimg.com/564x/09/80/65/098065c7e785ec16c230d796d5a68a86.jpg'
+          }          
         ]
       },
       {
-        header: null,
+        header: 'More information',
         pages: [
           {
             title: 'Setting',
@@ -494,7 +511,7 @@ export default {
     height: 250px;
     width: 100%;
     max-width: 500px;
-    background: #383838; // Change to gray color
+    background: #252525; // Change to gray color
   }
 
   .vb > .vb-dragger {
@@ -547,7 +564,7 @@ export default {
 
 <style scoped>
 .custom-search-field {
-  background-color: #383838 !important;  /* Ensure the background color applies */
+  background-color: #252525 !important;  /* Ensure the background color applies */
   color: white  !important;              /* Text color */
   border-radius: 20px;                    /* Rounded corners */
 }
@@ -558,8 +575,8 @@ export default {
 }
 
 /* Styles for the placeholder text */
-.custom-search-field input::placeholder {
-  color: white;                         /* Placeholder text color */
+.custom-search-field .v-input__control input::placeholder {
+  color: white; /* Placeholder text color */
 }
 
 .logo-toolbar-title {

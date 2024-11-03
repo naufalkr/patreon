@@ -1,7 +1,7 @@
 <template>
-  <div id="home" class="pa-4" :style="{ backgroundColor: '#070707' }">
+  <div id="home" class="pa-4" :style="{ backgroundColor: '#131313' }">
     <v-container fluid>
-      <v-alert prominent type="error" v-if="errored" color="#383838" text="#f4efe1">
+      <v-alert prominent type="error" v-if="errored">
         <v-row align="center">
           <v-col class="grow">
             <div class="title">Error!</div>
@@ -10,221 +10,172 @@
             </div>
           </v-col>
           <v-col class="shrink">
-            <v-btn @click="loadData" color="#f4efe1" text>Take action</v-btn>
+            <v-btn @click="getPosts">Take action</v-btn>
           </v-col>
         </v-row>
       </v-alert>
 
       <main v-else class="main-content">
-        <!-- Recently Visited -->
-        <h3 class="headline font-weight-medium">Recently Visited</h3>
+        <h3 class="headline font-weight-medium">Recommended Posts</h3>
         <v-row>
           <v-col
             cols="12"
-            sm="6"
-            md="3"
-            v-for="(page, i) in recentlyVisited"
-            :key="`recent-${i}`"
-            class="mx-xs-auto"
+            v-for="(post, i) in posts"
+            :key="i"
+            class="mx-auto"
           >
-            <router-link to="#" class="post-card">
-              <v-img
-                :src="page.image"
-                class="image"
-                height="150"
-                contain
-              ></v-img>
-              <h4>{{ page.title }}</h4>
-              <p>{{ page.content }}</p>
-            </router-link>
+            <v-skeleton-loader type="card" :loading="loading">
+              <div class="post-card">
+                <img v-if="post.image" :src="post.image" alt="Post Image" class="post-image" />
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.content }}</p>
+                <p class="grey--text">{{ post.userId }} - {{ dateFormatter(post.date) }}</p>
+              </div>
+            </v-skeleton-loader>
           </v-col>
-        </v-row>
-
-        <!-- Creators for You -->
-        <h3 class="headline font-weight-medium mt-4">Creators for You</h3>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="3"
-            v-for="(creator, i) in creatorsForYou"
-            :key="`creator-${i}`"
-            class="mx-xs-auto"
-          >
-            <router-link to="#" class="creator-card">
-              <v-img
-                :src="creator.image"
-                class="image"
-                height="100"
-                contain
-              ></v-img>
-              <h4>{{ creator.name }}</h4>
-              <p>{{ creator.description }}</p>
-            </router-link>
+          <v-col class="text-center" v-if="posts.length === 0 && !loading">
+            <p>No posts yet</p>
           </v-col>
-        </v-row>
-
-        <!-- Popular This Week -->
-        <h3 class="headline font-weight-medium mt-4">Popular This Week</h3>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="4"
-            v-for="(popular, i) in popularThisWeek"
-            :key="`popular-${i}`"
-            class="mx-xs-auto"
-          >
-            <router-link to="#" class="post-card">
-              <v-img
-                :src="popular.image"
-                class="image"
-                height="150"
-                contain
-              ></v-img>
-              <h4>{{ popular.title }}</h4>
-              <p>{{ popular.content }}</p>
-            </router-link>
-          </v-col>
-        </v-row>
-
-        <!-- Explore Topics -->
-        <h3 class="headline font-weight-medium mt-4">Explore Topics</h3>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="3"
-            v-for="(topic, i) in exploreTopics"
-            :key="`topic-${i}`"
-            class="mx-xs-auto"
-          >
-            <router-link to="#" class="topic-card">
-              <v-img
-                :src="topic.image"
-                class="image"
-                height="100"
-                contain
-              ></v-img>
-              <h4>{{ topic.name }}</h4>
-            </router-link>
-          </v-col>
-        </v-row>
-
-        <!-- New on Patreon -->
-        <h3 class="headline font-weight-medium mt-4">New on Patreon</h3>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="3"
-            v-for="(newPost, i) in newOnPatreon"
-            :key="`new-${i}`"
-            class="mx-xs-auto"
-          >
-            <router-link to="#" class="post-card">
-              <v-img
-                :src="newPost.image"
-                class="image"
-                height="150"
-                contain
-              ></v-img>
-              <h4>{{ newPost.title }}</h4>
-              <p>{{ newPost.content }}</p>
-            </router-link>
+          <v-col cols="12">
+            <infinite-loading @infinite="getPosts">
+              <div slot="spinner">
+                <v-progress-circular
+                  indeterminate
+                  color="red"
+                ></v-progress-circular>
+              </div>
+              <div slot="no-results"></div>
+              <span slot="no-more"></span>
+              <div slot="error" slot-scope="{ trigger }">
+                <v-alert prominent type="error">
+                  <v-row align="center">
+                    <v-col class="grow">
+                      <div class="title">Error!</div>
+                      <div>
+                        Something went wrong, but don’t fret — let’s give it another shot.
+                      </div>
+                    </v-col>
+                    <v-col class="shrink">
+                      <v-btn @click="trigger">Take action</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-alert>
+              </div>
+            </infinite-loading>
           </v-col>
         </v-row>
       </main>
-
     </v-container>
   </div>
 </template>
 
-
 <script>
+import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 
 export default {
   name: 'Home',
   data: () => ({
+    loading: false,
+    loaded: false,
     errored: false,
-    recentlyVisited: [],
-    creatorsForYou: [],
-    popularThisWeek: [],
-    exploreTopics: [],
-    newOnPatreon: []
+    posts: [],
+    page: 1
   }),
-  created() {
-    this.loadData();
-  },
   methods: {
-    loadData() {
-      // Dummy data for each section with image URLs
-      const placeholderImage = 'https://via.placeholder.com/350x150';
+    async getPosts($state) {
+      // Simulate an API request for posts with hardcoded dummy data
+      this.loading = true;
 
-      this.recentlyVisited = Array.from({ length: 4 }, (_, i) => ({
-        title: `Recently Visited Post ${i + 1}`,
-        content: `Content for recently visited post ${i + 1}.`,
-        image: placeholderImage
-      }));
+      try {
+        const dummyPosts = [
+          { 
+            title: "Post Title 1", 
+            content: "This is the content of post 1.", 
+            userId: "User1", 
+            date: new Date(),
+            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+1"
+          },
+          { 
+            title: "Post Title 2", 
+            content: "This is the content of post 2.", 
+            userId: "User2", 
+            date: new Date(),
+            image: null // No image for this post
+          },
+          { 
+            title: "Post Title 3", 
+            content: "This is the content of post 3.", 
+            userId: "User3", 
+            date: new Date(),
+            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+3"
+          },
+          { 
+            title: "Post Title 4", 
+            content: "This is the content of post 4.", 
+            userId: "User4", 
+            date: new Date(),
+            image: null // No image for this post
+          },
+          { 
+            title: "Post Title 5", 
+            content: "This is the content of post 5.", 
+            userId: "User5", 
+            date: new Date(),
+            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+5"
+          }
+        ];
 
-      this.creatorsForYou = Array.from({ length: 8 }, (_, i) => ({
-        name: `Creator ${i + 1}`,
-        description: `Description of creator ${i + 1}.`,
-        image: placeholderImage
-      }));
-
-      this.popularThisWeek = Array.from({ length: 12 }, (_, i) => ({
-        title: `Popular Post ${i + 1}`,
-        content: `Content for popular post ${i + 1}.`,
-        image: placeholderImage
-      }));
-
-      this.exploreTopics = Array.from({ length: 8 }, (_, i) => ({
-        name: `Topic ${i + 1}`,
-        image: placeholderImage
-      }));
-
-      this.newOnPatreon = Array.from({ length: 8 }, (_, i) => ({
-        title: `New Post ${i + 1}`,
-        content: `Content for new post ${i + 1}.`,
-        image: placeholderImage
-      }));
+        // Append dummy data for infinite scrolling
+        if (dummyPosts.length) {
+          this.page += 1;
+          this.posts.push(...dummyPosts);
+          $state.loaded();
+          this.loaded = true;
+        } else {
+          $state.complete();
+        }
+      } catch (error) {
+        console.error(error);
+        this.errored = true;
+      } finally {
+        this.loading = false;
+      }
     },
     dateFormatter(date) {
       return moment(date).fromNow();
     }
+  },
+  components: {
+    InfiniteLoading
   }
 }
 </script>
 
 <style lang="scss">
 .main-content {
-  padding-left: 150px; /* Adjust the left padding */
-  padding-right: 150px; /* Adjust the right padding */
+  padding-left: 400px; /* Adjust the left padding */
+  padding-right: 400px; /* Adjust the right padding */
 }
 
-.post-card, .creator-card, .topic-card {
-  background-color: #383838;
+.post-card {
+  background-color: #252525;
   color: #f4efe1;
   padding: 16px; /* Keep the internal padding for each card */
   border-radius: 8px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Slightly darker shadow for depth */
+  margin-bottom: 16px; /* Add spacing between posts */
+  position: relative; /* Position relative for seamless effect */
+  overflow: hidden; /* Hide overflow to ensure seamless edges */
 }
 
-.post-card, .creator-card, .topic-card {
-  display: block; /* Makes the link behave like a block element */
-  text-decoration: none; /* Removes the underline from the link */
-  color: inherit; /* Keeps the text color from the parent */
+.post-image {
+  width: 100%; /* Make the image full width */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px 8px 0 0; /* Rounded corners at the top */
 }
 
-.image {
-  border-radius: 8px;
-  margin-bottom: 8px;
-  background-color: #383838;
-}
-
-.v-alert .title, .v-alert div, .headline, .post-card h4, .post-card p, .creator-card h4, .creator-card p, .topic-card h4 {
+.v-alert .title, .v-alert div, .headline, .post-card h4, .post-card p {
   color: #f4efe1;
 }
 

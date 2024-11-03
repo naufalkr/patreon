@@ -360,14 +360,14 @@ export default {
   }
 
   .createVideoBtn {
-    border-color: #383838; // Changed to gray color
+    border-color: #252525; // Changed to gray color
   }
 
   .vuebar-element {
     height: 250px;
     width: 100%;
     max-width: 500px;
-    background-color: #383838 !important; // Changed to gray color
+    background-color: #252525 !important; // Changed to gray color
   }
 
   .vb > .vb-dragger {
@@ -389,30 +389,30 @@ export default {
     height: calc(100% - 10px);
     display: block;
     width: 10px;
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
   }
 
   .v-navigation-drawer__content:hover .vb > .vb-dragger > .vb-dragger-styler {
     width: 10px;
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
   }
 
   .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
   }
 
   .vb > .vb-dragger:hover > .vb-dragger-styler {
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
   }
 
   .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
     margin: 0px;
     height: 100%;
   }
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: #383838; // Changed to gray color
+    background-color: #252525; // Changed to gray color
   }
 }
 </style>
