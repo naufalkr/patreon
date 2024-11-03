@@ -338,23 +338,23 @@ export default {
         header: 'Memberships',
         pages: [
           {
-            title: 'Pierson Wodzynski',
-            link: '#Pi',
-            image: 'https://i.pinimg.com/736x/55/52/dd/5552dd66ab991e3b25275719d45d59ab.jpg'
+            title: 'Joe Budden',
+            link: 'channels/#joebudden',
+            image: 'https://c10.patreonusercontent.com/4/patreon-media/p/campaign/6030293/0227f44b29e14465927d53079b4b0f5a/eyJoIjozNjAsInciOjM2MH0%3D/4.jpg?token-time=1731888000&token-hash=K2NriJNbtiP4wYV_xkLBLNaHcMjW5v2QVnk39c9SjLU%3D'
           },
           {
             title: 'The New Boston',
-            link: '#tn',
+            link: 'channels/#thenewboston',
             image: 'https://yt3.googleusercontent.com/ytc/AIdro_luVhNF6yTdaq1SHoMmVoBAYcvUZkOBsXfEnuwcGf-G4y8=s160-c-k-c0x00ffffff-no-rj'
           },
           {
             title: 'Net Ninja',
-            link: '#nn',
+            link: 'channels/#netninja',
             image: 'https://i.pinimg.com/564x/66/83/3d/66833db3c1610f83ca05515453167e81.jpg'
           },
           {
             title: 'Chris Hawks',
-            link: '#ch',
+            link: 'channels/#chrishawks',
             image: 'https://i.pinimg.com/564x/09/80/65/098065c7e785ec16c230d796d5a68a86.jpg'
           }          
         ]
