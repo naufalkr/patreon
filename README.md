@@ -15,7 +15,7 @@ VUE_APP_URL=http://localhost:3001
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles for development
 
 ```
 npm run serve

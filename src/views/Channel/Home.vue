@@ -233,7 +233,7 @@ export default {
     subscribeLoading: false,
     showSubBtn: true,
     url: process.env.VUE_APP_URL,
-    items: ['Videos', 'Membership', 'About'],
+    items: ['Home', 'Membership', 'About'],
     posts: [
       {
         title: "Post Title 1",
