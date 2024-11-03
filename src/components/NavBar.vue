@@ -1,79 +1,61 @@
 <template>
   <nav id="navbar">
-    <v-app-bar class="white" flat app clipped-left>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="font-weight-bold"
-        ><router-link to="/" class="black--text" style="text-decoration: none"
-          >VueTube</router-link
-        ></v-toolbar-title
-      >
+    <!-- NAVBAR -->    
+    <v-app-bar style="background-color: #070707;" flat app clipped-left>
+      
+      <!-- Spacers to align items in the navbar -->
       <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
+
+      <!-- Search Field -->
       <v-text-field
-        flat
         hide-details
         append-icon="mdi-magnify"
-        placeholder="Search"
+        placeholder="Search creators or topics"
         outlined
         dense
         v-model="searchText"
         @click:append="search"
+        class="custom-search-field"
       ></v-text-field>
-
       <v-spacer></v-spacer>
 
+      <!-- Create Video Menu -->
       <v-menu offsetY>
         <template v-slot:activator="{ on: menu }">
-          <v-tooltip bottom>
+          <v-tooltip bottom class="custom-tooltip">
             <template v-slot:activator="{ on: tooltip }">
-              <v-btn icon class="mr-7" v-on="{ ...tooltip, ...menu }"
-                ><v-icon size="25">mdi-video-plus</v-icon></v-btn
-              >
+              <v-btn icon class="mr-7" v-on="{ ...tooltip, ...menu }">
+                <v-icon color="#f4efe1" size="25">mdi-plus-circle </v-icon>
+              </v-btn>
             </template>
-            <span>Create a video and more</span>
+            <span>Become a creator</span>
           </v-tooltip>
         </template>
         <v-list>
           <v-list-item router to="/studio">
-            <v-list-item-icon class="mr-3"
-              ><v-icon>mdi-play-box-outline</v-icon></v-list-item-icon
-            >
+            <v-list-item-icon class="mr-3">
+              <v-icon>mdi-play-box-outline</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>Upload video</v-list-item-title>
           </v-list-item>
-          <!-- <v-list-item>
-            <v-list-item-icon class="mr-3"
-              ><v-icon>mdi-access-point</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>Go live</v-list-item-title>
-          </v-list-item> -->
         </v-list>
       </v-menu>
-      <!-- <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on"> <v-icon size="25">mdi-apps</v-icon></v-btn>
-        </template>
-        <span>VueTube apps</span>
-      </v-tooltip> -->
 
-      <!-- <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" class="mr-7">
-            <v-icon size="25">mdi-bell</v-icon></v-btn
-          >
-        </template>
-        <span>Notifications</span>
-      </v-tooltip> -->
+      <!-- Sign In Button for Non-authenticated Users -->
       <v-btn
         tile
         outlined
-        color="blue"
+        color="#f4efe1"
         class="font-weight-bold"
         v-if="!$store.getters.isAuthenticated"
         router
         to="/signin"
       >
-        <v-icon left size="26">mdi-account-circle</v-icon> Sign in
+        <v-icon left size="26">mdi-account-plus</v-icon> Sign in
       </v-btn>
 
+      <!-- User Menu for Authenticated Users -->
       <v-menu offset-y left v-else>
         <template v-slot:activator="{ on }">
           <v-btn small color="red" depressed fab v-on="on" class="white--text">
@@ -84,9 +66,7 @@
               />
             </v-avatar>
             <template v-else>
-              <span class="headline">
-                {{ currentUser.channelName.split('')[0].toUpperCase() }}
-              </span>
+              <span class="headline">{{ currentUser.channelName.split('')[0].toUpperCase() }}</span>
             </template>
           </v-btn>
         </template>
@@ -103,22 +83,14 @@
                 </v-avatar>
                 <template v-else>
                   <v-avatar color="red">
-                    <span class="white--text headline ">
-                      {{
-                        currentUser.channelName.split('')[0].toUpperCase()
-                      }}</span
-                    >
+                    <span class="white--text headline ">{{ currentUser.channelName.split('')[0].toUpperCase() }}</span>
                   </v-avatar>
                 </template>
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title class="text-capitalize">{{
-                  currentUser.channelName
-                }}</v-list-item-title>
-                <v-list-item-subtitle>{{
-                  currentUser.email
-                }}</v-list-item-subtitle>
+                <v-list-item-title class="text-capitalize">{{ currentUser.channelName }}</v-list-item-title>
+                <v-list-item-subtitle>{{ currentUser.email }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -126,10 +98,7 @@
           <v-divider></v-divider>
 
           <v-list>
-            <v-list-item
-              router
-              :to="`/channels/${$store.getters.currentUser._id}`"
-            >
+            <v-list-item router :to="`/channels/${$store.getters.currentUser._id}`">
               <v-list-item-icon>
                 <v-icon>mdi-account-box</v-icon>
               </v-list-item-icon>
@@ -139,7 +108,7 @@
               <v-list-item-icon>
                 <v-icon>mdi-youtube-studio</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>VueTube Studio</v-list-item-title>
+              <v-list-item-title>Patreon Studio</v-list-item-title>
             </v-list-item>
             <v-list-item @click="signOut">
               <v-list-item-icon>
@@ -152,33 +121,32 @@
       </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      :clipped="$route.name !== 'Watch'"
-      :temporary="$route.name === 'Watch'"
-      id="nav"
-    >
+    <!-- SIDEBAR -->
+    <v-navigation-drawer app id="nav" style="background-color: #383838">
       <div tag="div" class="v-navigation-drawer__content" v-bar>
         <v-list dense nav class="py-0" tag="div">
-          <v-list-item
-            :class="{
-              'hidden-lg-and-up': $route.name === 'Watch' ? false : true
-            }"
-          >
-            <v-app-bar-nav-icon
-              @click="drawer = !drawer"
-              class="mr-5"
-            ></v-app-bar-nav-icon>
-            <v-toolbar-title class="font-weight-bold">VueTube</v-toolbar-title>
+          <v-list-item>
+            <v-toolbar-title class="logo-toolbar-title">
+              <router-link to="/" style="text-decoration: none">
+                <v-img
+                  src="@/assets/Patroen.png" 
+                  alt="Patreon Logo"
+                  height="40"
+                  padding-top=20px                         
+                  contain
+                />
+              </router-link>
+            </v-toolbar-title>
           </v-list-item>
-          <v-divider class="hidden-lg-and-up"></v-divider>
+          <v-divider></v-divider>
           <div v-for="parentItem in items" :key="parentItem.header">
-            <v-subheader
+            <!-- Subheader for different sections -->
+            <v-subheader style="color: #f4efe1;"
               v-if="parentItem.header"
               class="pl-3 py-4 subtitle-1 font-weight-bold text-uppercase"
-              >{{ parentItem.header }}</v-subheader
-            >
+            >{{ parentItem.header }}</v-subheader>
+
+            <!-- List of navigation items -->
             <v-list-item
               v-for="(item, i) in parentItem.header === 'Subscriptions'
                 ? items[2].pages.slice(0, channelLength)
@@ -194,7 +162,7 @@
               active-class="active-item"
             >
               <v-list-item-icon v-if="parentItem.header !== 'Subscriptions'">
-                <v-icon>{{ item.icon }}</v-icon>
+                <v-icon style="color: #f4efe1;">{{ item.icon }}</v-icon>
               </v-list-item-icon>
               <v-list-item-avatar v-else class="mr-5">
                 {{ i }}
@@ -204,9 +172,7 @@
                   "
                 >
                   <img
-                    :src="
-                      `${getUrl}/uploads/avatars/${item.channelId.photoUrl}`
-                    "
+                    :src="`${getUrl}/uploads/avatars/${item.channelId.photoUrl}`"
                     :alt="`${item.channelId.channelName} avatar`"
                   />
                 </v-avatar>
@@ -220,8 +186,8 @@
                   </v-avatar>
                 </template>
               </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class=" font-weight-medium subtitle-2">{{
+              <v-list-item-content style="color: #f4efe1;">
+                <v-list-item-title class="font-weight-medium subtitle-2">{{
                   parentItem.header === 'Subscriptions'
                     ? item.channelId.channelName
                     : item.title
@@ -229,6 +195,7 @@
               </v-list-item-content>
             </v-list-item>
 
+            <!-- Button to show more channels -->
             <v-btn
               id="showBtn"
               @click="moreChannels"
@@ -257,7 +224,8 @@
             ></v-divider>
           </div>
 
-          <span v-for="link in links" :key="link.text">
+          <!-- Footer links (commented out) -->
+          <!-- <span v-for="link in links" :key="link.text">
             <span v-if="link.text === 'Terms'" class="mb-2 d-block"> </span>
             <v-btn
               href
@@ -266,13 +234,14 @@
               text
               class="text-capitalize px-1"
               small
-              >{{ link.text }}</v-btn
-            >
-          </span>
+            >{{ link.text }}</v-btn>
+          </span> -->
         </v-list>
       </div>
     </v-navigation-drawer>
-  </nav>
+
+</nav>
+
 </template>
 
 <script>
@@ -354,10 +323,10 @@ export default {
         ]
       },
       {
-        header: 'MORE FROM VUETUBE',
+        header: 'MORE FROM PATREON',
         pages: [
           {
-            title: 'VueTube Premium',
+            title: 'Patreon Premium',
             link: '#vp',
             icon: 'mdi-youtube'
           },
@@ -499,6 +468,7 @@ export default {
 .v-list-item__avatar {
   justify-content: center !important;
 }
+
 #showBtn {
   .v-btn__content {
     justify-content: flex-start;
@@ -508,12 +478,14 @@ export default {
     }
   }
 }
+
 #navbar {
   .active-item {
     .v-list-item__icon {
-      color: red !important;
+      color: #f4efe1 !important; // Change to text color
     }
   }
+  
   .v-navigation-drawer__border {
     width: 0 !important;
   }
@@ -522,7 +494,7 @@ export default {
     height: 250px;
     width: 100%;
     max-width: 500px;
-    background: #dfe9fe;
+    background: #383838; // Change to gray color
   }
 
   .vb > .vb-dragger {
@@ -549,12 +521,11 @@ export default {
 
   .v-navigation-drawer__content:hover .vb > .vb-dragger > .vb-dragger-styler {
     width: 10px;
-    background-color: #e0e0e0;
+    background-color: #f4efe1; // Change to text color
   }
 
   .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244, 0.3);
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(244, 239, 225, 0.3); // Adjust for text color opacity
   }
 
   .vb > .vb-dragger:hover > .vb-dragger-styler {
@@ -563,13 +534,39 @@ export default {
   }
 
   .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244, 0.5);
+    background-color: rgba(244, 239, 225, 0.5); // Adjust for text color opacity
     margin: 0px;
     height: 100%;
   }
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244, 0.5);
+    background-color: rgba(244, 239, 225, 0.5); // Adjust for text color opacity
   }
 }
+</style>
+
+<style scoped>
+.custom-search-field {
+  background-color: #383838 !important;  /* Ensure the background color applies */
+  color: white  !important;              /* Text color */
+  border-radius: 20px;                    /* Rounded corners */
+}
+
+/* Styles for the input text */
+.custom-search-field input {
+  color: white !important;              /* Ensure the input text color is set */
+}
+
+/* Styles for the placeholder text */
+.custom-search-field input::placeholder {
+  color: white;                         /* Placeholder text color */
+}
+
+.logo-toolbar-title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-right: 80px;
+}
+
+
 </style>

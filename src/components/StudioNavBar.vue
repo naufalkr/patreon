@@ -352,25 +352,22 @@ export default {
 <style lang="scss">
 #studioBar {
   .active-item {
-    // border-radius: 0 !important;
-    border-left: 3px solid #cc0202;
+    border-left: 3px solid #f4efe1; // Changed to text color
     .v-list-item__icon,
     .subtitle-2 {
-      color: #cc0202 !important;
+      color: #f4efe1 !important; // Changed to text color
     }
   }
+
   .createVideoBtn {
-    border-color: rgb(185, 181, 181);
+    border-color: #383838; // Changed to gray color
   }
-  // .v-navigation-drawer__border {
-  //   width: 0 !important;
-  // }
 
   .vuebar-element {
     height: 250px;
     width: 100%;
     max-width: 500px;
-    background-color: #8d8a8a !important;
+    background-color: #383838 !important; // Changed to gray color
   }
 
   .vb > .vb-dragger {
@@ -392,30 +389,30 @@ export default {
     height: calc(100% - 10px);
     display: block;
     width: 10px;
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
   }
+
   .v-navigation-drawer__content:hover .vb > .vb-dragger > .vb-dragger-styler {
     width: 10px;
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
   }
+
   .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
   }
 
   .vb > .vb-dragger:hover > .vb-dragger-styler {
-    // margin: 0px;
-    // width: 10px;
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
   }
 
   .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
     margin: 0px;
     height: 100%;
   }
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: #8d8a8a;
+    background-color: #383838; // Changed to gray color
   }
 }
 </style>
