@@ -7,243 +7,192 @@
   >
     <v-card>
       <div class="d-flex justify-space-between mb-5" id="modal-header">
-        <v-card-title class="py-3">Upload Video</v-card-title>
+        <v-card-title class="py-3">Upload Content</v-card-title>
         <div class="mt-3 mr-2">
-          <v-btn text>
-            Upload With Classic
-          </v-btn>
           <v-btn icon text @click="closeModal">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
       </div>
 
-      <v-card-text
-        v-if="!uploaded"
-        class="d-flex flex-column align-center my-md-12 py-md-12 my-sm-8 py-sm-8 my-xs-0 py-xs-0 my-12 py-12"
-      >
-        <div v-if="!uploading" class="text-center">
-          <div>
-            <v-btn
-              icon
-              class="grey lighten-2 mb-4"
-              style="height: 104px;width: 104px;"
-              @click="selectFile"
-              ><v-icon x-large class="grey--text text--darken-1"
-                >mdi-upload</v-icon
-              ></v-btn
+      <v-card-text>
+        <ValidationObserver ref="form" v-slot="{ invalid }">
+          <form @submit.prevent="submit">
+            <div class="text-center">
+              <v-btn
+                icon
+                class="grey lighten-2 mb-4"
+                style="height: 104px; width: 104px; background-color: #252525;"
+                @click="selectFile"
+              >
+                <v-icon x-large style="color: #ffffff;">mdi-upload-outline</v-icon>
+              </v-btn>
+            </div>
+
+            <ValidationProvider
+              rules="required|size:5000"
+              v-slot="{ errors }"
+              name="file"
+              ref="provider"
             >
-          </div>
+              <v-file-input
+                @change="uploadVideo"
+                v-model="selectedFile"
+                accept="video/mp4"
+                placeholder="Pick a video"
+                prepend-icon="mdi-attachment"
+                ref="fileInput"
+                style="color: #252525;"          
+              ></v-file-input >
+              <span v-if="errors.length" style="color: #252525;">
+        {{ errors[0] }}
+      </span> 
+            </ValidationProvider>
 
-          <ValidationProvider
-            rules="required|size:5000"
-            v-slot="{ errors }"
-            name="file"
-            ref="provider"
-          >
-            <v-file-input
-              @change="uploadVideo"
-              v-model="selectedFile"
-              accept="video/mp4"
-              placeholder="Pick an video"
-              prepend-icon="mdi-video"
-              :error-messages="errors"
-              ref="fileInput"
-            ></v-file-input>
-          </ValidationProvider>
-          <v-btn
-            type="submit"
-            depressed
-            @click="$refs.fileInput.$refs.input.click()"
-            class="blue darken-3 flat white--text mt-4"
-            >Select File</v-btn
-          >
-        </div>
+            <v-progress-circular
+              v-if="uploading"
+              :rotate="360"
+              :size="100"
+              :width="15"
+              :value="value"
+              color="#252525"
+            >
+              {{ value }}
+            </v-progress-circular>
 
-        <v-progress-circular
-          v-else
-          :rotate="360"
-          :size="100"
-          :width="15"
-          :value="value"
-          color="teal"
-        >
-          {{ value }}
-        </v-progress-circular>
+            <div class="mt-6">
+              <v-divider></v-divider>
+              <h3 class="mt-4">Upload Image</h3>
+              <ValidationProvider
+                rules="required"
+                name="Image"
+              >
+                <v-file-input
+                  v-model="selectedImage"
+                  accept="image/*"
+                  placeholder="Pick an image"
+                  prepend-icon="mdi-attachment"
+                  class="mb-4"
+                ></v-file-input>
+              </ValidationProvider>
+
+              <v-divider></v-divider>
+            </div>
+
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Title"
+              rules="required|min:3"
+            >
+              <v-text-field
+                v-model="formData.title"
+                :error-messages="errors"
+                label="Add a title"
+                class="mb-3"
+                filled
+                dense
+                counter="100"
+                max-length="100"
+              ></v-text-field>
+            </ValidationProvider>
+
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Description"
+              rules="required|min:3"
+            >
+              <v-textarea
+                filled
+                auto-grow
+                :error-messages="errors"
+                placeholder="What're you thinking about?"
+                rows="5"
+                counter="5000"
+                max-length="5000"
+                v-model="formData.description"
+                row-height="20"
+              ></v-textarea>
+            </ValidationProvider>
+
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Visibility"
+              rules="required"
+            >
+              <v-select
+                :items="visibilityOptions"
+                :error-messages="errors"
+                filled
+                label="Visibility"
+                v-model="formData.visibility"
+              ></v-select>
+            </ValidationProvider>
+
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Category"
+              rules="required"
+            >
+              <v-select
+                :items="categoriesTitles"
+                :error-messages="errors"
+                filled
+                label="Membership Tier"
+                v-model="formData.category"
+                :loading="categoryLoading"
+              ></v-select>
+            </ValidationProvider>
+
+            <div class="mt-6 d-flex justify-space-between">
+              <v-btn
+                :loading="submitLoading"
+                type="submit"
+                class="primary"
+                depressed
+                :disabled="invalid"
+                style="background-color: #252525; color: #ffffff;"
+              >Upload</v-btn>
+            </div>
+          </form>
+        </ValidationObserver>
       </v-card-text>
-      <v-card-text v-else>
-        <h2 class="mb-6">Details</h2>
-        <v-row>
-          <v-col
-            order="last"
-            order-sm="last"
-            order-md="first"
-            order-lg="first"
-            order-xl="first"
-            cols="12"
-            sm="12"
-            md="8"
-            lg="8"
-          >
-            <ValidationObserver ref="form">
-              <form @submit.prevent="submit">
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  name="Title"
-                  rules="required|min:3"
-                >
-                  <v-text-field
-                    v-model="formData.title"
-                    :error-messages="errors"
-                    label="Title (required)"
-                    class="mb-3"
-                    filled
-                    dense
-                    counter="100"
-                    max-length="100"
-                  ></v-text-field>
-                </ValidationProvider>
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  name="Description"
-                  rules="required|min:3"
-                >
-                  <v-textarea
-                    filled
-                    auto-grow
-                    :error-messages="errors"
-                    label="Description"
-                    placeholder="Tell viewers about your video"
-                    rows="5"
-                    counter="5000"
-                    max-length="5000"
-                    v-model="formData.description"
-                    row-height="20"
-                  ></v-textarea>
-                </ValidationProvider>
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  name="Visibilty"
-                  rules="required|min:3"
-                >
-                  <v-select
-                    :items="visibilty"
-                    :error-messages="errors"
-                    filled
-                    label="Visibilty"
-                    v-model="formData.visibilty"
-                  ></v-select>
-                </ValidationProvider>
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  name="Cateogry"
-                  rules="required|min:3"
-                >
-                  <v-select
-                    :items="categoriesTitles"
-                    :error-messages="errors"
-                    filled
-                    label="Categories"
-                    v-model="formData.category"
-                    :loading="categoryLoading"
-                  ></v-select>
-                </ValidationProvider>
 
-                <div class="mt-6 d-flex justify-space-between">
-                  <v-btn
-                    :loading="submitLoading"
-                    type="submit"
-                    class="primary"
-                    depressed
-                    >Submit</v-btn
-                  >
-                </div>
-              </form>
-            </ValidationObserver>
-          </v-col>
-          <v-col
-            order-sm="1"
-            cols="12"
-            sm="12"
-            md="4"
-            lg="4"
-            class="text-center"
-          >
-            <v-btn text @click="toggleShow">Upload Thumbnails</v-btn>
-            <my-upload
-              field="thumbnail"
-              @crop-success="cropSuccess"
-              method="PUT"
-              v-model="show"
-              :width="1280"
-              :height="720"
-              :url="url"
-              :headers="headers"
-              img-format="jpg"
-              langType="en"
-            ></my-upload>
-            <v-responsive width="330" class="mx-auto">
-              <div v-if="!imgDataUrl" class="px-12" id="image-placeholder">
-                <v-icon>mdi-image-plus</v-icon>
-              </div>
-              <v-img
-                v-else
-                max-width="330"
-                height="350"
-                :src="imgDataUrl"
-              ></v-img>
-            </v-responsive>
-            <p v-if="imgDataUrl == ''" class="red--text">
-              Please upload thumbnail
-            </p>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions v-if="!uploaded">
-        <p class="text-center grey--text caption px-12 px-xs-0">
-          By submitting your videos to YouTube, you acknowledge that you agree
-          to YouTube's Terms of Service and Community Guidelines. Please be sure
-          not to violate others' copyright or privacy rights. Learn more
-        </p>
+      <v-card-actions>
+
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import myUpload from "vue-image-crop-upload";
+// import myUpload from "vue-image-crop-upload";
 import VideoService from "@/services/VideoService";
 import CategoryService from "@/services/CategoryService";
+
 export default {
   name: "UploadModal",
   props: ["openDialog"],
-  data: function () {
+  data() {
     return {
-      // dialog: this.openDialog ? this.openDialog : false,
       valid: false,
       uploaded: false,
       uploading: false,
       submitLoading: false,
       categoryLoading: false,
-      interval: {},
       value: 0,
       show: false,
-      rules: [
-        (value) =>
-          !value ||
-          value.size > 5000000 ||
-          `Video size should be less than 5 MB!, ${value.size}`,
-      ],
-      categoriesTitles: [],
+      categoriesTitles: ["Basic", "Family", "Friend of The Show", "Part of the Show"],
       categories: [],
-      visibilty: ["Public", "Private"],
-      selectedFile: [],
+      visibilityOptions: ["Public", "Private"],
+      selectedFile: null,
+      selectedImage: null,
+      uploadedText: "",
       formData: {
         id: "",
         title: "",
         description: "",
         category: "",
-        visibilty: "",
+        visibility: "",
       },
       imgDataUrl: "",
       url: "",
@@ -258,9 +207,7 @@ export default {
   methods: {
     async uploadVideo(e) {
       const { valid } = await this.$refs.provider.validate(e);
-
       if (!valid) return;
-      // console.log(this.selectedFile)
 
       this.uploading = true;
       const fd = new FormData();
@@ -268,18 +215,16 @@ export default {
 
       let video = await VideoService.uploadVideo(fd, {
         onUploadProgress: (uploadEvent) => {
-          this.value = Math.round(
-            (uploadEvent.loaded / uploadEvent.total) * 100
-          );
+          this.value = Math.round((uploadEvent.loaded / uploadEvent.total) * 100);
         },
       })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.uploaded = true;
-          this.uploading = false;
-        });
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        this.uploaded = true;
+        this.uploading = false;
+      });
 
       if (!video) return;
       video = video.data.data;
@@ -287,50 +232,38 @@ export default {
       this.formData.id = video._id;
       this.formData.title = video.title;
       this.formData.description = video.description;
-      this.formData.cateogry = video.cateogry;
       this.url = `${process.env.VUE_APP_URL}/api/v1/videos/${video._id}/thumbnails`;
-      // this.interval = setInterval(() => {
-      //   if (this.value === 100) {
-      //     this.uploaded = true
-      //     clearInterval(this.inte-rval)
-      //   }
-      //   this.value += 10
-      // }, 1000)
-      // }
-      // }
     },
     async submit() {
-      if (this.imgDataUrl == "") return;
+      if (!this.selectedImage || this.uploadedText.trim() === "") return;
       this.submitLoading = true;
-      this.formData.category = this.categories.find(
+
+      // Find the selected category ID
+      const selectedCategory = this.categories.find(
         (category) => category.title === this.formData.category
-      )._id;
+      );
+      if (selectedCategory) {
+        this.formData.category = selectedCategory._id;
+      }
 
       const video = await VideoService.updateVideo(this.formData.id, {
         title: this.formData.title,
         description: this.formData.description,
         categoryId: this.formData.category,
-        status: this.formData.visibilty.toLowerCase(),
+        status: this.formData.visibility.toLowerCase(),
       })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.submitLoading = false;
-          this.uploaded = false;
-        });
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        this.submitLoading = false;
+        this.uploaded = false;
+        this.resetForm();
+      });
 
       if (!video) return;
-      // this.$nextTick(() => {
-      //   this.$refs.form.reset()
-      // })
-      this.formData.visibilty = "";
-      this.imgDataUrl = "";
-      this.selectedFile = [];
-      this.closeModal();
 
       this.$router.push(`/studio/videos?${new Date()}`);
-      // console.log('submittied')
     },
     async getCategories() {
       this.categoryLoading = true;
@@ -340,9 +273,7 @@ export default {
         })
         .finally(() => (this.categoryLoading = false));
 
-      this.categoriesTitles = categories.data.data.map((category) => {
-        return category.title;
-      });
+      this.categoriesTitles = categories.data.data.map((category) => category.title);
       this.categories = categories.data.data;
     },
     closeModal() {
@@ -351,32 +282,30 @@ export default {
     selectFile() {
       this.$refs.fileInput.$refs.input.click();
     },
-    toggleShow() {
-      this.show = !this.show;
-    },
-    cropSuccess(imgDataUrl, field) {
-      console.log("-------- crop success --------");
-      console.log(field);
-      this.imgDataUrl = imgDataUrl;
+    resetForm() {
+      this.formData = {
+        id: "",
+        title: "",
+        description: "",
+        category: "",
+        visibility: "",
+      };
+      this.selectedFile = null;
+      this.selectedImage = null;
+      this.uploadedText = "";
+      this.imgDataUrl = "";
+      this.show = false;
     },
   },
   components: {
-    myUpload,
+    // myUpload,
   },
-  mounted() {
+  created() {
     this.getCategories();
   },
 };
 </script>
 
-<style lang="scss">
-#modal-header {
-  border-bottom: 1px solid rgb(238, 232, 232);
-}
-
-#image-placeholder {
-  padding-top: 8em;
-  padding-bottom: 8em;
-  border: 2px dashed rgb(209, 209, 209);
-}
+<style scoped>
+/* Add any required styles here */
 </style>

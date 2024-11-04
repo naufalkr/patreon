@@ -101,7 +101,7 @@
                         <img v-if="post.image" :src="post.image" alt="Post Image" class="post-image" />
                         <h4 style="color: #f4efe1;">{{ post.title }}</h4>
                         <p style="color: #f4efe1;">{{ post.content }}</p>
-                        <p class="grey--text" style="color: #f4efe1;">{{ post.userId }} - {{ dateFormatter(post.date) }}</p>
+                        <p class="grey--text" style="color: #f4efe1;">{{ post.userId }} {{ dateFormatter(post.date) }}</p>
                       </div>
                     </v-skeleton-loader>
                   </v-col>
@@ -238,21 +238,21 @@ export default {
       {
         title: "Post Title 1",
         content: "This is the content of post 1.",
-        userId: "User1",
+        // userId: "User1",
         date: new Date(),
         image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+1"
       },
       {
         title: "Post Title 2",
         content: "This is the content of post 2.",
-        userId: "User2",
+        // userId: "User2",
         date: new Date(),
         image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+2"
       },
       {
         title: "Post Title 3",
         content: "This is the content of post 3.",
-        userId: "User3",
+        // userId: "User3",
         date: new Date(),
         image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+3"
       },

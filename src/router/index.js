@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
-import StudioNavBar from '@/components/StudioNavBar.vue'
+// import StudioNavBar from '@/components/StudioNavBar.vue'
 
 Vue.use(VueRouter)
 
@@ -68,7 +68,7 @@ const routes = [
   {
     path: '/studio',
     components: {
-      StudioNavBar,
+      // NavBar,
       default: () =>
         import(/* webpackChunkName: "dashboard" */ '../views/Studio/Index.vue')
     },

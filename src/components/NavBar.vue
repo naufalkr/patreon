@@ -29,7 +29,7 @@
                 <v-icon color="#f4efe1" size="25">mdi-plus-circle </v-icon>
               </v-btn>
             </template>
-            <span>Become a creator</span>
+            <!-- <span>Creator dashboard</span> -->
           </v-tooltip>
         </template>
         <v-list>
@@ -37,90 +37,11 @@
             <v-list-item-icon class="mr-3">
               <v-icon>mdi-play-box-outline</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>Upload video</v-list-item-title>
+            <v-list-item-title>Creator dashboard</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
 
-      <!-- Sign In Button for Non-authenticated Users -->
-      <v-btn
-        tile
-        outlined
-        color="#f4efe1"
-        class="font-weight-bold"
-        v-if="!$store.getters.isAuthenticated"
-        router
-        to="/signin"
-      >
-        <!-- <v-icon left size="26">mdi-account-plus</v-icon> Sign in -->
-        <v-icon left size="26">mdi-account-plus</v-icon> Sign in
-
-      </v-btn>
-
-      <!-- User Menu for Authenticated Users -->
-      <v-menu offset-y left v-else>
-        <template v-slot:activator="{ on }">
-          <v-btn small color="red" depressed fab v-on="on" class="white--text">
-            <v-avatar v-if="currentUser.photoUrl !== 'no-photo.jpg'">
-              <img
-                :src="`${getUrl}/uploads/avatars/${currentUser.photoUrl}`"
-                :alt="`${currentUser.channelName} avatar`"
-              />
-            </v-avatar>
-            <template v-else>
-              <span class="headline">{{ currentUser.channelName.split('')[0].toUpperCase() }}</span>
-            </template>
-          </v-btn>
-        </template>
-
-        <v-card>
-          <v-list>
-            <v-list-item>
-              <v-list-item-avatar>
-                <v-avatar v-if="currentUser.photoUrl !== 'no-photo.jpg'">
-                  <img
-                    :src="`${getUrl}/uploads/avatars/${currentUser.photoUrl}`"
-                    :alt="`${currentUser.channelName} avatar`"
-                  />
-                </v-avatar>
-                <template v-else>
-                  <v-avatar color="red">
-                    <span class="white--text headline ">{{ currentUser.channelName.split('')[0].toUpperCase() }}</span>
-                  </v-avatar>
-                </template>
-              </v-list-item-avatar>
-
-              <v-list-item-content>
-                <v-list-item-title class="text-capitalize">{{ currentUser.channelName }}</v-list-item-title>
-                <v-list-item-subtitle>{{ currentUser.email }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-
-          <v-divider></v-divider>
-
-          <v-list>
-            <v-list-item router :to="`/channels/${$store.getters.currentUser._id}`">
-              <v-list-item-icon>
-                <v-icon>mdi-account-box</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>Your channel</v-list-item-title>
-            </v-list-item>
-            <v-list-item router to="/studio">
-              <v-list-item-icon>
-                <v-icon>mdi-youtube-studio</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>Patreon Studio</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="signOut">
-              <v-list-item-icon>
-                <v-icon>mdi-login-variant</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>Sign out</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
     </v-app-bar>
 
     <!-- SIDEBAR -->

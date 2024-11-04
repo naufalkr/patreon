@@ -2,35 +2,24 @@
   <div id="dashboard" class="pa-4">
     <v-container fluid>
       <div class="d-flex justify-space-between mb-5">
-        <h2>channel dashboard</h2>
+        <h2>creator dashboard</h2>
         <div class="right">
           <v-tooltip bottom>
             <template v-slot:activator="{ on: tooltip }">
               <v-btn
                 @click="dialog = true"
                 class="mr-4 white"
-                icon
                 v-on="{ ...tooltip }"
-                ><v-icon size="25" class="small">mdi-upload</v-icon></v-btn
+                style="border: 1px solid #252525; border-radius: 4px; padding: 10px; background-color: white; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);"
               >
-            </template>
-            <span>Upload video</span>
-          </v-tooltip>
-        </div>
-      </div>
-      <v-row>
-        <v-col cols="12" sm="6" md="4">
-          <v-card class="mx-auto" outlined>
-            <v-card-title class="pl-5">Recent subscribers</v-card-title>
-
-            <v-card-actions class="d-block ml-2">
-              <v-btn color="blue" text @click="subscribersDialog = true">
-                See all
+                Upload Content
               </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
+            </template>
+            <!-- <span>Upload content</span> -->
+          </v-tooltip>
+
+        </div>
+      </div>      
     </v-container>
     <upload-video-modal
       :open-dialog="dialog"
