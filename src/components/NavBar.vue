@@ -15,7 +15,6 @@
         outlined
         dense
         v-model="searchText"
-        @click:append="search"
         class="custom-search-field"
       ></v-text-field>
       <v-spacer></v-spacer>
@@ -26,14 +25,14 @@
           <v-tooltip bottom class="custom-tooltip">
             <template v-slot:activator="{ on: tooltip }">
               <v-btn icon class="mr-7" v-on="{ ...tooltip, ...menu }">
-                <v-icon color="#f4efe1" size="25">mdi-plus-circle </v-icon>
+                <v-icon color="#f4efe1" size="25">mdi-plus-circle</v-icon>
               </v-btn>
             </template>
             <!-- <span>Creator dashboard</span> -->
           </v-tooltip>
         </template>
         <v-list>
-          <v-list-item router to="/studio">
+          <v-list-item>
             <v-list-item-icon class="mr-3">
               <v-icon>mdi-play-box-outline</v-icon>
             </v-list-item-icon>
@@ -50,15 +49,13 @@
         <v-list dense nav class="py-0" tag="div">
           <v-list-item>
             <v-toolbar-title class="logo-toolbar-title">
-              <router-link to="/" style="text-decoration: none">
-                <v-img
-                  src="@/assets/Patroen.png" 
-                  alt="Patreon Logo"
-                  height="40"
-                  padding-top=20px                         
-                  contain
-                />
-              </router-link>
+              <v-img
+                src="@/assets/Patroen.png" 
+                alt="Patreon Logo"
+                height="40"
+                padding-top=20px                         
+                contain
+              />
             </v-toolbar-title>
           </v-list-item>
           <v-divider></v-divider>
@@ -77,13 +74,6 @@
                 : parentItem.pages"
               :key="item.title"
               class="mb-0"
-              :to="
-                parentItem.header === 'Subscriptions'
-                  ? '/channels/' + item.channelId._id
-                  : item.link
-              "
-              exact
-              active-class="active-item"
             >
 
               <!-- UPLOAD ICON DAN IMAGE -->
@@ -98,9 +88,7 @@
               <v-list-item-avatar v-else class="mr-5">
                 {{ i }}
                 <v-avatar
-                  v-if="
-                    item.channelId.photoUrl !== 'no-photo.jpg' && item.channelId
-                  "
+                  v-if="item.channelId.photoUrl !== 'no-photo.jpg' && item.channelId"
                 >
                   <img
                     :src="`${getUrl}/uploads/avatars/${item.channelId.photoUrl}`"
@@ -132,11 +120,7 @@
             <v-btn
               id="showBtn"
               @click="moreChannels"
-              v-if="
-                parentItem.header === 'Subscriptions' &&
-                  isAuthenticated &&
-                  items[2].length > 0
-              "
+              v-if="parentItem.header === 'Subscriptions' && isAuthenticated && items[2].length > 0"
               block
               text
               class="text-none"
@@ -161,9 +145,6 @@
           <!-- <span v-for="link in links" :key="link.text">
             <span v-if="link.text === 'Terms'" class="mb-2 d-block"> </span>
             <v-btn
-              href
-              router
-              :to="link.link"
               text
               class="text-capitalize px-1"
               small
@@ -172,15 +153,13 @@
         </v-list>
       </div>
     </v-navigation-drawer>
-
-</nav>
-
+  </nav>
 </template>
+
+
 
 <script>
 import { mapGetters } from 'vuex'
-import SubscriptionService from '@/services/SubscriptionService'
-import HistoryService from '@/services/HistoryService'
 
 export default {
   data: () => ({
@@ -327,42 +306,7 @@ export default {
     ...mapGetters(['currentUser', 'getUrl', 'isAuthenticated'])
   },
   methods: {
-    async search() {
-      if (!this.searchText) return
-      // console.log(this.searchText == this.$route.query['search-query'])
-      if (this.searchText == this.$route.query['search-query']) return
-      // this.searchText = this.$route.query['search-query']
-      const data = {
-        type: 'search',
-        searchText: this.searchText
-      }
 
-      if (this.isAuthenticated)
-        await HistoryService.createHistory(data).catch((err) =>
-          console.log(err)
-        )
-
-      this.$router.push({
-        name: 'Search',
-        query: { 'search-query': this.searchText }
-      })
-    },
-    async getSubscribedChannels() {
-      const channels = await SubscriptionService.getSubscribedChannels(
-        this.currentUser._id
-      ).catch((err) => console.log(err))
-      this.items[2].pages = channels.data.data
-      this.channelLength = 3
-    },
-    moreChannels() {
-      if (this.channelLength === 3)
-        this.channelLength = this.items[2].pages.length
-      else this.channelLength = 3
-    },
-    signOut() {
-      this.$store.dispatch('signOut')
-      // this.$router.push('/')
-    }
   },
   // beforeRouteLeave(to, from, next) {
   //   this.searchText = ''

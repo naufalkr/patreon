@@ -215,14 +215,10 @@
         </v-container>
       </v-card>
     </div>
-
-    <signin-modal :openModal="signinDialog" :details="details" @closeModal="signinDialog = false" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import SigninModal from '@/components/SigninModal'
 
 export default {
   data: () => ({
@@ -327,21 +323,19 @@ export default {
     }
   }),
   computed: {
-    ...mapGetters(['isAuthenticated', 'currentUser'])
   },
   components: {
-    SigninModal
   },
   methods: {
     async subscribe() {
-      if (!this.isAuthenticated) {
-        this.signinDialog = true
-        this.details = {
-          title: 'Want to membership to this channel?',
-          text: 'Sign in to membership to this channel.'
-        }
-        return
-      }
+      // if (!this.isAuthenticated) {
+      //   this.signinDialog = true
+      //   this.details = {
+      //     title: 'Want to membership to this channel?',
+      //     text: 'Sign in to membership to this channel.'
+      //   }
+      //   return
+      // }
 
       this.subscribeLoading = true
       // Add subscription logic here

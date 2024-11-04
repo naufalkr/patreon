@@ -10,7 +10,7 @@
             </div>
           </v-col>
           <v-col class="shrink">
-            <v-btn @click="getPosts">Take action</v-btn>
+            <v-btn @click="loadPosts">Try Again</v-btn>
           </v-col>
         </v-row>
       </v-alert>
@@ -37,12 +37,9 @@
             <p>No posts yet</p>
           </v-col>
           <v-col cols="12">
-            <infinite-loading @infinite="getPosts">
+            <infinite-loading @infinite="loadPosts">
               <div slot="spinner">
-                <v-progress-circular
-                  indeterminate
-                  color="red"
-                ></v-progress-circular>
+                <v-progress-circular indeterminate color="red"></v-progress-circular>
               </div>
               <div slot="no-results"></div>
               <span slot="no-more"></span>
@@ -77,61 +74,24 @@ export default {
   name: 'Home',
   data: () => ({
     loading: false,
-    loaded: false,
     errored: false,
     posts: [],
-    page: 1
   }),
   methods: {
-    async getPosts($state) {
-      // Simulate an API request for posts with hardcoded dummy data
+    loadPosts($state) {
       this.loading = true;
-
       try {
         const dummyPosts = [
-          { 
-            title: "Post Title 1", 
-            content: "This is the content of post 1.", 
-            userId: "User1", 
-            date: new Date(),
-            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+1"
-          },
-          { 
-            title: "Post Title 2", 
-            content: "This is the content of post 2.", 
-            userId: "User2", 
-            date: new Date(),
-            image: null // No image for this post
-          },
-          { 
-            title: "Post Title 3", 
-            content: "This is the content of post 3.", 
-            userId: "User3", 
-            date: new Date(),
-            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+3"
-          },
-          { 
-            title: "Post Title 4", 
-            content: "This is the content of post 4.", 
-            userId: "User4", 
-            date: new Date(),
-            image: null // No image for this post
-          },
-          { 
-            title: "Post Title 5", 
-            content: "This is the content of post 5.", 
-            userId: "User5", 
-            date: new Date(),
-            image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+5"
-          }
+          { title: "Post Title 1", content: "This is the content of post 1.", userId: "User1", date: new Date(), image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+1" },
+          { title: "Post Title 2", content: "This is the content of post 2.", userId: "User2", date: new Date(), image: null },
+          { title: "Post Title 3", content: "This is the content of post 3.", userId: "User3", date: new Date(), image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+3" },
+          { title: "Post Title 4", content: "This is the content of post 4.", userId: "User4", date: new Date(), image: null },
+          { title: "Post Title 5", content: "This is the content of post 5.", userId: "User5", date: new Date(), image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+5" }
         ];
 
-        // Append dummy data for infinite scrolling
         if (dummyPosts.length) {
-          this.page += 1;
           this.posts.push(...dummyPosts);
           $state.loaded();
-          this.loaded = true;
         } else {
           $state.complete();
         }
@@ -154,25 +114,25 @@ export default {
 
 <style lang="scss">
 .main-content {
-  padding-left: 400px; /* Adjust the left padding */
-  padding-right: 400px; /* Adjust the right padding */
+  padding-left: 400px;
+  padding-right: 400px;
 }
 
 .post-card {
   background-color: #252525;
   color: #f4efe1;
-  padding: 16px; /* Keep the internal padding for each card */
+  padding: 16px;
   border-radius: 8px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Slightly darker shadow for depth */
-  margin-bottom: 16px; /* Add spacing between posts */
-  position: relative; /* Position relative for seamless effect */
-  overflow: hidden; /* Hide overflow to ensure seamless edges */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
 .post-image {
-  width: 100%; /* Make the image full width */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 8px 8px 0 0; /* Rounded corners at the top */
+  width: 100%;
+  height: auto;
+  border-radius: 8px 8px 0 0;
 }
 
 .v-alert .title, .v-alert div, .headline, .post-card h4, .post-card p {
@@ -180,7 +140,7 @@ export default {
 }
 
 h3.headline {
-  color: #f4efe1; /* Ensure headlines are visible */
-  margin-top: 16px; /* Margin above each headline */
+  color: #f4efe1;
+  margin-top: 16px;
 }
 </style>
