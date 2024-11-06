@@ -64,8 +64,7 @@ exports.signin = (req, res) => {
         });
       }
 
-      const token = jwt.sign({ id: user.id },
-                              config.secret,
+      const token = jwt.sign({ id: user.id }, config.secret,
                               {
                                 algorithm: 'HS256',
                                 allowInsecureKeySizes: true,

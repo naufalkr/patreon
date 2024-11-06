@@ -7,38 +7,19 @@
             <v-card-title class="text-center">Patreon</v-card-title>
             <v-card-subtitle class="mb-5">Sign in</v-card-subtitle>
             <v-card-text>
-              <form>
-                <v-text-field
-                  v-model="email"
-                  label="Email"
-                  outlined
-                ></v-text-field>
+              <form @submit.prevent="signIn">
+                <v-text-field v-model="username" label="Username" outlined></v-text-field>
                 <p class="ma-0 text-right">
-                  <v-btn
-                    text
-                    small
-                    class="pl-0 text-capitalize"
-                    color="primary"
-                  >
+                  <v-btn text small class="pl-0 text-capitalize" color="primary">
                     Forget Password?
                   </v-btn>
                 </p>
-                <v-text-field
-                  v-model="password"
-                  type="password"
-                  label="Password"
-                  outlined
-                ></v-text-field>
+                <v-text-field v-model="password" type="password" label="Password" outlined></v-text-field>
                 <div class="mt-6 d-flex justify-space-between">
-                  <v-btn
-                    text
-                    small
-                    class="pl-0 text-capitalize"
-                    color="primary"
-                  >
+                  <v-btn text small class="pl-0 text-capitalize" color="primary">
                     Create account
                   </v-btn>
-                  <v-btn class="primary" depressed>
+                  <v-btn class="primary" depressed @click="signIn">
                     Sign in
                   </v-btn>
                 </div>
@@ -52,15 +33,35 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'SignIn',
   data: () => ({
-    email: '',
+    username: '',
     password: '',
   }),
+  methods: {
+    async signIn() {
+      try {
+        // Make POST request to backend for sign-in
+        const response = await axios.post('http://localhost:8080/api/auth/signin', {
+          username: this.username,
+          password: this.password,
+        });
+
+        // Handle the received token and other data
+        const { accessToken } = response.data;
+        if (accessToken) {
+          localStorage.setItem('token', accessToken); // Store token in localStorage for future requests
+          this.$router.push({ name: 'Home' }); // Redirect to the home page or dashboard
+        } else {
+          alert('Failed to sign in.');
+        }
+      } catch (error) {
+        alert(error.response?.data?.message || 'An error occurred during sign-in.');
+      }
+    },
+  },
 };
 </script>
-
-<style scoped>
-/* Add any scoped CSS if needed */
-</style>
