@@ -3,10 +3,10 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
-        <img src="..\assets\Patroena.png" alt="Patreon Logo" class="patreon-logo" />
+        <img src="../assets/Patroena.png" alt="Patreon Logo" class="patreon-logo" />
         <h1>Join the Creative Community</h1>
         <p>Support your favorite creators and gain access to exclusive content and experiences.</p>
-        <button @click="goToSignIn" class="btn-signin">Sign In</button>
+        <button class="btn-signin">Sign In</button>
       </div>
     </section>
 
@@ -33,13 +33,7 @@
 </template>
 
 <script>
-export default {
-  methods: {
-    goToSignIn() {
-      this.$router.push({ name: 'SignIn' });
-    },
-  },
-};
+export default {};
 </script>
 
 <style lang="scss">

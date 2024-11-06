@@ -10,7 +10,7 @@
             </div>
           </v-col>
           <v-col class="shrink">
-            <v-btn @click="loadData" color="#f4efe1" text>Take action</v-btn>
+            <v-btn color="#f4efe1" text>Take action</v-btn>
           </v-col>
         </v-row>
       </v-alert>
@@ -27,7 +27,7 @@
             :key="`recent-${i}`"
             class="mx-xs-auto"
           >
-            <router-link to="#" class="post-card">
+            <div class="post-card">
               <v-img
                 :src="page.image"
                 class="image"
@@ -36,7 +36,7 @@
               ></v-img>
               <h4>{{ page.title }}</h4>
               <p>{{ page.content }}</p>
-            </router-link>
+            </div>
           </v-col>
         </v-row>
 
@@ -51,7 +51,7 @@
             :key="`creator-${i}`"
             class="mx-xs-auto"
           >
-            <router-link to="#" class="creator-card">
+            <div class="creator-card">
               <v-img
                 :src="creator.image"
                 class="image"
@@ -60,7 +60,7 @@
               ></v-img>
               <h4>{{ creator.name }}</h4>
               <p>{{ creator.description }}</p>
-            </router-link>
+            </div>
           </v-col>
         </v-row>
 
@@ -75,7 +75,7 @@
             :key="`popular-${i}`"
             class="mx-xs-auto"
           >
-            <router-link to="#" class="post-card">
+            <div class="post-card">
               <v-img
                 :src="popular.image"
                 class="image"
@@ -84,7 +84,7 @@
               ></v-img>
               <h4>{{ popular.title }}</h4>
               <p>{{ popular.content }}</p>
-            </router-link>
+            </div>
           </v-col>
         </v-row>
 
@@ -99,7 +99,7 @@
             :key="`topic-${i}`"
             class="mx-xs-auto"
           >
-            <router-link to="#" class="topic-card">
+            <div class="topic-card">
               <v-img
                 :src="topic.image"
                 class="image"
@@ -107,7 +107,7 @@
                 contain
               ></v-img>
               <h4>{{ topic.name }}</h4>
-            </router-link>
+            </div>
           </v-col>
         </v-row>
 
@@ -122,7 +122,7 @@
             :key="`new-${i}`"
             class="mx-xs-auto"
           >
-            <router-link to="#" class="post-card">
+            <div class="post-card">
               <v-img
                 :src="newPost.image"
                 class="image"
@@ -131,7 +131,7 @@
               ></v-img>
               <h4>{{ newPost.title }}</h4>
               <p>{{ newPost.content }}</p>
-            </router-link>
+            </div>
           </v-col>
         </v-row>
       </main>
@@ -140,10 +140,7 @@
   </div>
 </template>
 
-
 <script>
-import moment from 'moment'
-
 export default {
   name: 'explore',
   data: () => ({
@@ -190,9 +187,6 @@ export default {
         content: `Content for new post ${i + 1}.`,
         image: placeholderImage
       }));
-    },
-    dateFormatter(date) {
-      return moment(date).fromNow();
     }
   }
 }
