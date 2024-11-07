@@ -151,6 +151,16 @@ const routes = [
     ]
   },
   {
+    path: '/payment',
+    name: 'Payment',
+    components: {
+      NavBar,
+      default: () =>
+        import(/* webpackChunkName: "video" */ '../views/Payment.vue')
+    },
+    // meta: { requiresAuth: true }
+  },
+  {
     path: '/watch/:id',
     name: 'Watch',
     components: {
