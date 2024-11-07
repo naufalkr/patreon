@@ -133,13 +133,22 @@ const routes = [
     ]
   },
   {
-    path: '',
-    name: 'Watch',
+    path: '/profile',
     components: {
-      NavBar,
+      // NavBar,
       default: () =>
-        import(/* webpackChunkName: "video" */ '../views/Watch.vue')
-    }
+        import(/* webpackChunkName: "dashboard" */ '../views/Auth/Profile.vue')
+    },
+    children: [
+      {
+        path: '/',
+        name: 'ProfilePage',
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard" */ '../views/Auth/Profile.vue'
+          )
+      }
+    ]
   },
   {
     path: '/watch/:id',
