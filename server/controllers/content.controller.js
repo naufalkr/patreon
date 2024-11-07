@@ -4,8 +4,10 @@ const ContentUrl = db.contentUrl;
 
 exports.create = async (req, res) => {
   try {
+    console.log(req.userId);
     const content = await Content.create({
       user_id: req.userId, // Ensure user_id is set from token
+      // user_id: req.body.user_id,
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags

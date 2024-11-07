@@ -2,7 +2,14 @@
 
 ## Project setup
 SERVER SIDE
+
 go to /server and then do these
+
+run to install all the dependencies
+
+```
+npm i
+```
 
 create .env according to the .env.example files and your database settings, as of now we are using postgrest
 

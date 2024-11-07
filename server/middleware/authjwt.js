@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const db = require("../models");
+const Content = db.content;
 const User = db.user;
 
 verifyToken = (req, res, next) => {
@@ -82,14 +83,21 @@ isModeratorOrAdmin = (req, res, next) => {
   });
 };
 
-verifyUserId = (req, res, next) => {
-  if (req.body.user_id !== req.userId) {
-    return res.status(403).send({
-      message: "User ID does not match the token's user ID!"
-    });
+// verifyUserId middleware
+verifyUserId = async (req, res, next) => {
+  try {
+    // Decode the user from the token and assign `userId` to `req`
+    const content = await Content.findByPk(req.params.id);
+
+    // if (!content || content.user_id !== req.userId) {
+    //   return res.status(403).send({ message: "Unauthorized action on this content.", reqUserId: req.userId, content });
+    // }
+    next();
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
-  next();
 };
+
 
 const authJwt = {
   verifyToken: verifyToken,
