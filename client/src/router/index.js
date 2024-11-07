@@ -65,37 +65,37 @@ const routes = [
         import(/* webpackChunkName: "explore" */ '../views/Explore.vue')
     }
   },
-  {
-    path: '/studio',
-    components: {
-      // NavBar,
-      default: () =>
-        import(/* webpackChunkName: "dashboard" */ '../views/Studio/Index.vue')
-    },
-    children: [
-      {
-        path: '/',
-        name: 'Dashboard',
-        component: () =>
-          import(
-            /* webpackChunkName: "dashboard" */ '../views/Studio/Dashboard.vue'
-          )
-      },
-      {
-        path: 'videos',
-        name: 'Video',
-        component: () =>
-          import(/* webpackChunkName: "video" */ '../views/Studio/Video.vue')
-      },
-      {
-        path: 'details/:id',
-        name: 'Detail',
-        component: () =>
-          import(/* webpackChunkName: "video" */ '../views/Studio/Details.vue')
-      }
-    ],
-    // meta: { requiresAuth: true }
-  },
+  // {
+  //   path: '/studio',
+  //   components: {
+  //     NavBar,
+  //     default: () =>
+  //       import(/* webpackChunkName: "dashboard" */ '../views/Studio/Index.vue')
+  //   },
+  //   children: [
+  //     {
+  //       path: '/',
+  //       name: 'Dashboard',
+  //       component: () =>
+  //         import(
+  //           /* webpackChunkName: "dashboard" */ '../views/Studio/Dashboard.vue'
+  //         )
+  //     },
+  //     {
+  //       path: 'videos',
+  //       name: 'Video',
+  //       component: () =>
+  //         import(/* webpackChunkName: "video" */ '../views/Studio/Video.vue')
+  //     },
+  //     {
+  //       path: 'details/:id',
+  //       name: 'Detail',
+  //       component: () =>
+  //         import(/* webpackChunkName: "video" */ '../views/Studio/Details.vue')
+  //     }
+  //   ],
+  //   // meta: { requiresAuth: true }
+  // },
   {
     path: '/channels',
     components: {
@@ -113,6 +113,33 @@ const routes = [
           )
       }
     ]
+  },
+  {
+    path: '/studio',
+    components: {
+      // NavBar,
+      default: () =>
+        import(/* webpackChunkName: "dashboard" */ '../views/Studio/Dashboard.vue')
+    },
+    children: [
+      {
+        path: '/',
+        name: 'Dashboard',
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard" */ '../views/Studio/Dashboard.vue'
+          )
+      }
+    ]
+  },
+  {
+    path: '',
+    name: 'Watch',
+    components: {
+      NavBar,
+      default: () =>
+        import(/* webpackChunkName: "video" */ '../views/Watch.vue')
+    }
   },
   {
     path: '/watch/:id',
