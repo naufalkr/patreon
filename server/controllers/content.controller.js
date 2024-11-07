@@ -5,7 +5,7 @@ const ContentUrl = db.contentUrl;
 exports.create = async (req, res) => {
   try {
     const content = await Content.create({
-      user_id: req.userId, // Assuming you have middleware that sets userId
+      user_id: req.userId, // Ensure user_id is set from token
       title: req.body.title,
       description: req.body.description,
       tags: req.body.tags

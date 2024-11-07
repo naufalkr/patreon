@@ -82,10 +82,20 @@ isModeratorOrAdmin = (req, res, next) => {
   });
 };
 
+verifyUserId = (req, res, next) => {
+  if (req.body.user_id !== req.userId) {
+    return res.status(403).send({
+      message: "User ID does not match the token's user ID!"
+    });
+  }
+  next();
+};
+
 const authJwt = {
   verifyToken: verifyToken,
   isAdmin: isAdmin,
   isModerator: isModerator,
-  isModeratorOrAdmin: isModeratorOrAdmin
+  isModeratorOrAdmin: isModeratorOrAdmin,
+  verifyUserId: verifyUserId
 };
 module.exports = authJwt;

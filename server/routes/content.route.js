@@ -12,23 +12,23 @@ module.exports = function(app) {
 
   app.post(
     "/api/content",
-    [authjwt.verifyToken],
+    [authjwt.verifyToken, authjwt.verifyUserId],
     controller.create
   );
 
   app.get("/api/content", controller.findAll);
   
-  app.get("/api/content/:id", controller.findOne);
+  app.get("/api/content", controller.findOne);
   
   app.put(
-    "/api/content/:id",
-    [authjwt.verifyToken],
+    "/api/content",
+    [authjwt.verifyToken, authjwt.verifyUserId],
     controller.update
   );
   
   app.delete(
-    "/api/content/:id",
-    [authjwt.verifyToken],
+    "/api/id/content",
+    [authjwt.verifyToken, authjwt.verifyUserId],
     controller.delete
   );
 };
