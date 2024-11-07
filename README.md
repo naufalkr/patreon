@@ -1,7 +1,5 @@
-# patreon-vue
-
-## Project setup
-SERVER SIDE
+# Project Setup
+## SERVER SIDE
 
 go to /server and then do these
 
@@ -19,7 +17,8 @@ run the server.js
 node server.js
 ```
 
-CLIENT SIDE
+## CLIENT SIDE
+
 go to /client and then do these
 
 Create .env.development.local for development then .env.production.local for production ready app.
