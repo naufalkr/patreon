@@ -1,24 +1,19 @@
 <template>
-  <nav id="navbar">
+  <nav id="navbaronly">
     <!-- NAVBAR -->    
     <v-app-bar style="background-color: #131313;" flat app clipped-left>
-      
-      <!-- Spacers to align items in the navbar -->
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
+      <!-- Logo - no left margin to align to the left edge -->
+      <v-toolbar-title class="logo-toolbar-title" style="margin-left: -15px;">
+        <router-link to="/home" style="text-decoration: none">
+          <v-img
+            src="@/assets/Patroen.png" 
+            alt="Patreon Logo"
+            height="40"
+            contain
+          />
+        </router-link>
+      </v-toolbar-title>
 
-      <!-- Search Field -->
-      <v-text-field
-        hide-details
-        append-icon="mdi-magnify"
-        placeholder="Search creators or topics"
-        outlined
-        dense
-        v-model="searchQuery"
-        @click:append="search"
-        class="custom-search-field"
-      ></v-text-field>
-      
       <v-spacer></v-spacer>
 
       <!-- Create Video Menu -->
@@ -34,7 +29,6 @@
                 </v-avatar>
               </v-btn>
             </template>
-            <!-- <span>Creator dashboard</span> -->
           </v-tooltip>
         </template>
         <v-list>
@@ -54,139 +48,11 @@
       </v-menu>
 
     </v-app-bar>
-
-    <!-- SIDEBAR -->
-    <v-navigation-drawer app id="nav" style="background-color: #252525">
-      <div tag="div" class="v-navigation-drawer__content" v-bar>
-        <v-list dense nav class="py-0" tag="div">
-          <v-list-item>
-            <v-toolbar-title class="logo-toolbar-title">
-              <router-link to="/" style="text-decoration: none">
-                <v-img
-                  src="@/assets/Patroen.png" 
-                  alt="Patreon Logo"
-                  height="40"
-                  padding-top=20px                         
-                  contain
-                />
-              </router-link>
-            </v-toolbar-title>
-          </v-list-item>
-          <v-divider></v-divider>
-          
-          <div v-for="parentItem in items" :key="parentItem.header">
-            <!-- Subheader for different sections -->
-            <v-subheader style="color: #f4efe1;"
-              v-if="parentItem.header"
-              class="pl-3 py-4 subtitle-1 font-weight-bold text-uppercase"
-            >{{ parentItem.header }}</v-subheader>
-
-            <!-- List of navigation items -->
-            <v-list-item
-              v-for="(item, i) in parentItem.header === 'Subscriptions'
-                ? items[2].pages.slice(0, channelLength)
-                : parentItem.pages"
-              :key="item.title"
-              class="mb-0"
-              :to="
-                parentItem.header === 'Subscriptions'
-                  ? '/channels/' + item.channelId._id
-                  : item.link
-              "
-              exact
-              active-class="active-item"
-            >
-
-              <!-- UPLOAD ICON DAN IMAGE -->
-              <v-list-item-icon v-if="parentItem.header !== 'Subscriptions'">
-                 <template v-if="item.image">
-                    <img :src="item.image" alt="icon" style="width: 24px; height: 24px;" />
-                </template>
-                <template v-else>
-                    <v-icon style="color: #f4efe1;">{{ item.icon }}</v-icon>
-                </template>
-              </v-list-item-icon>
-              <v-list-item-avatar v-else class="mr-5">
-                {{ i }}
-                <v-avatar
-                  v-if="
-                    item.channelId.photoUrl !== 'no-photo.jpg' && item.channelId
-                  "
-                >
-                  <img
-                    :src="`${getUrl}/uploads/avatars/${item.channelId.photoUrl}`"
-                    :alt="`${item.channelId.channelName} avatar`"
-                  />
-                </v-avatar>
-                <template v-else>
-                  <v-avatar color="red">
-                    <span class="white--text headline ">
-                      {{
-                        item.channelId.channelName.split('')[0].toUpperCase()
-                      }}</span
-                    >
-                  </v-avatar>
-                </template>
-              </v-list-item-avatar>
-
-              <!-- TEXT DI SIDEBAR -->
-              <v-list-item-content style="color: #f4efe1;">
-                <v-list-item-title class="font-weight-medium subtitle-2">{{
-                  parentItem.header === 'Subscriptions'
-                    ? item.channelId.channelName
-                    : item.title
-                }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <!-- Button to show more channels -->
-            <v-btn
-              id="showBtn"
-              @click="moreChannels"
-              v-if="
-                parentItem.header === 'Subscriptions' &&
-                  isAuthenticated &&
-                  items[2].length > 0
-              "
-              block
-              text
-              class="text-none"
-            >
-              <v-icon>{{
-                channelLength === 3 ? 'mdi-chevron-down' : 'mdi-chevron-up'
-              }}</v-icon>
-              {{
-                channelLength === 3
-                  ? `Show ${items[2].pages.length - 3} more `
-                  : 'Show less'
-              }}</v-btn
-            >
-
-            <v-divider
-              v-if="parentItem.header !== false"
-              class="mt-2 mb-2"
-            ></v-divider>
-          </div>
-
-          <!-- Footer links (commented out) -->
-          <!-- <span v-for="link in links" :key="link.text">
-            <span v-if="link.text === 'Terms'" class="mb-2 d-block"> </span>
-            <v-btn
-              href
-              router
-              :to="link.link"
-              text
-              class="text-capitalize px-1"
-              small
-            >{{ link.text }}</v-btn>
-          </span> -->
-        </v-list>
-      </div>
-    </v-navigation-drawer>
-
-</nav>
-
+  </nav>
 </template>
+
+
+
 
 <script>
 import { mapGetters } from 'vuex'
@@ -501,9 +367,14 @@ export default {
   border-radius: 20px;                    /* Rounded corners */
 }
 
-/* Global CSS */
-.v-input__control input::placeholder {
-  color: white !important;
+/* Styles for the input text */
+.custom-search-field input {
+  color: white !important;              /* Ensure the input text color is set */
+}
+
+/* Styles for the placeholder text */
+.custom-search-field .v-input__control input::placeholder {
+  color: white; /* Placeholder text color */
 }
 
 .logo-toolbar-title {
@@ -512,5 +383,10 @@ export default {
   margin-right: 80px;
 }
 
+.logo-toolbar-title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-right: 80px;
+}
 
 </style>

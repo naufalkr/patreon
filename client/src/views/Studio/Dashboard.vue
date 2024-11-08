@@ -1,10 +1,6 @@
 <template>  
   <div id="dashboard">
-    <v-container fluid class="main-container">
-      <div class="d-flex justify-space-between mb-5">
-        <h2 style="margin-left: 10px">Creator Dashboard</h2>        
-      </div>      
-    </v-container>    
+ 
     <!-- <subscribers-modal
       :open-dialog="subscribersDialog"
       @closeDialog="subscribersDialog = false"
@@ -44,7 +40,10 @@
                         {{ channel.channelName }}
                       </v-list-item-title>
                       <v-list-item-subtitle style="color: #f4efe1;">
-                        {{ channel.memberships }} memberships
+                        {{ channel.channelUsername }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle style="color: #f4efe1;">
+                        {{ channel.memberships }} members
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -58,7 +57,7 @@
               tile              
               large
               depressed
-              @click="$router.push({ name: 'EditProfile' })"
+              :to="{ path: '/profile' }"
               style="margin-bottom: -80px; margin-left: 80px; border: 1px solid #252525; border-radius: 4px; padding: 10px; background-color: white; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);"
             >
               Edit Profile
@@ -263,10 +262,11 @@ export default {
     ],
     channel: {
       _id: 'channel1',
-      channelName: 'Joe Budden',
-      photoUrl: 'https://c10.patreonusercontent.com/4/patreon-media/p/campaign/6030293/0227f44b29e14465927d53079b4b0f5a/eyJoIjozNjAsInciOjM2MH0%3D/4.jpg?token-time=1731888000&token-hash=K2NriJNbtiP4wYV_xkLBLNaHcMjW5v2QVnk39c9SjLU%3D',
-      backgroundPhotoUrl: 'https://yt3.googleusercontent.com/LEHo9nugrNQxQUpp_uCWFDgGqSNd8FAtojS05fMMX86aKtLz4O-6Jn4yRIdY5bIDq3WqKdxXkA=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
-      memberships: 150.283,
+      channelName: 'Olivan Ardia',
+      channelUsername: '@olivanardia96',
+      photoUrl: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQ1xRwffQuyxddE7qdIwG7IMgHAvE25da4g-6igGIp8Erag6uL_',
+      backgroundPhotoUrl: 'https://yt3.googleusercontent.com/7-79NaZvZMm1HVv_-RnasIoQny5YMRXP08Z8N2mYZyAXmxE_kAyiVObmT02-EY_9XV4J9ZHLxw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj',
+      memberships: 288,
     },
     signinDialog: false,
     details: {},

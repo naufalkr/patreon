@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <router-view name="NavBar"></router-view>
-    <router-view name="StudioNavBar"></router-view>
+    <router-view name="NavBarOnly"></router-view>
+
+    <!-- <router-view name="StudioNavBar"></router-view> -->
     <v-content
       :class="{
         'content-bg': ![

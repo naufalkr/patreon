@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
+import NavBarOnly from '@/components/NavBarOnly.vue'
+
 // import StudioNavBar from '@/components/StudioNavBar.vue'
 
 Vue.use(VueRouter)
@@ -117,7 +119,7 @@ const routes = [
   {
     path: '/studio',
     components: {
-      // NavBar,
+      NavBarOnly,
       default: () =>
         import(/* webpackChunkName: "dashboard" */ '../views/Studio/Dashboard.vue')
     },
@@ -135,7 +137,7 @@ const routes = [
   {
     path: '/profile',
     components: {
-      // NavBar,
+      NavBarOnly,
       default: () =>
         import(/* webpackChunkName: "dashboard" */ '../views/Auth/Profile.vue')
     },
@@ -154,7 +156,7 @@ const routes = [
     path: '/payment',
     name: 'Payment',
     components: {
-      NavBar,
+      NavBarOnly,
       default: () =>
         import(/* webpackChunkName: "video" */ '../views/Payment.vue')
     },

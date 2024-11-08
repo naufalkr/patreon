@@ -33,7 +33,7 @@
                         {{ channel.channelName }}
                       </v-list-item-title>
                       <v-list-item-subtitle style="color: #f4efe1;">
-                        {{ channel.memberships }} memberships
+                        {{ channel.memberships }} members
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -225,7 +225,7 @@ export default {
     tab: null,
     loading: false,
     errored: false,
-    subscribed: true,
+    subscribed: false,
     subscribeLoading: false,
     showSubBtn: true,
     url: process.env.VUE_APP_URL,

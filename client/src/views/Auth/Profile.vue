@@ -2,10 +2,10 @@
 <div id="profile">
   <v-container fill-height fluid style="background-color: #252525; color: #2e2e2e">
     <!-- Profile Information Section -->
-    <v-row justify="center" class="mb-0">
+    <v-row justify="center" class="mb-0" style="margin-top: 20px;">
       <v-col cols="12" md="8">
         <v-card class="rounded-xl" style="background-color: #ffffff; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);">
-          <v-card-title class="text-h5 font-weight-bold pb-4">Profile Information</v-card-title>
+          <v-card-title class="text-h5 font-weight-bold pb-4">Profile information</v-card-title>
 
           <!-- Profile Picture -->
           <v-card-text class="text-center">
@@ -20,7 +20,7 @@
               accept="image/*"
               hide-details
               @change="previewProfilePicture"
-              class="mb-4"
+              class="mb-0"
             ></v-file-input>
           </v-card-text>
 
@@ -31,7 +31,7 @@
               label="Full Name"
               outlined
               color="primary"
-              class="mb-4"
+              class="mb-0"
               dense
             ></v-text-field>
           </v-card-text>
@@ -43,7 +43,7 @@
               label="Username"
               outlined
               color="primary"
-              class="mb-4"
+              class="mb-0"
               dense
             ></v-text-field>
           </v-card-text>
@@ -68,7 +68,7 @@
     <v-row justify="center" class="mb-0">
       <v-col cols="12" md="8">
         <v-card class="rounded-xl" style="background-color: #ffffff; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);">
-          <v-card-title class="text-h5 font-weight-bold pb-4">Update Password</v-card-title>
+          <v-card-title class="text-h5 font-weight-bold pb-4">Update password</v-card-title>
 
           <!-- Current Password -->
           <v-card-text>
@@ -78,7 +78,7 @@
               type="password"
               outlined
               color="primary"
-              class="mb-4"
+              class="mb-0"
               dense
             ></v-text-field>
           </v-card-text>
@@ -91,7 +91,7 @@
               type="password"
               outlined
               color="primary"
-              class="mb-4"
+              class="mb-0"
               dense
             ></v-text-field>
           </v-card-text>
@@ -104,7 +104,7 @@
               type="password"
               outlined
               color="primary"
-              class="mb-4"
+              class="mb-0"
               dense
             ></v-text-field>
           </v-card-text>
@@ -129,7 +129,7 @@
     <v-row justify="center" class="mb-5">
       <v-col cols="12" md="8">
         <v-card class="rounded-xl" style="background-color: #ffffff; box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);">
-          <v-card-title class="text-h5 font-weight-bold pb-4">Delete Account</v-card-title>
+          <v-card-title class="text-h5 font-weight-bold pb-4">Delete account</v-card-title>
 
           <v-card-text class="text-center">
             <p class="text-h6">Are you sure you want to delete your account? This action cannot be undone.</p>
@@ -157,8 +157,8 @@ export default {
   data() {
     return {
       profileData: {
-        name: "John Doe",
-        username: "johndoe123",
+        name: "Olivan Ardia",
+        username: "olivanardia96",
         currentPassword: "",
         newPassword: "",
         confirmNewPassword: "",
@@ -212,7 +212,7 @@ export default {
 .v-card {
   border-radius: 16px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .v-avatar {
@@ -234,14 +234,14 @@ export default {
 .v-btn:hover {
   background-color: #45a049;
 }
-/* 
-.v-row {
-    background-color: #252525
-} */
 
 .v-card-title {
   font-weight: bold;
   color: #333333;
+}
+
+.main-content{
+    /* margin-top: 200px; */
 }
 
 .v-card-actions {
