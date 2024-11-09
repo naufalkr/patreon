@@ -9,6 +9,10 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING
     }
+    // profile_image: {
+    //   type: Sequelize.STRING,
+    //   allowNull: true,
+    // }
   });
   
   return User;
