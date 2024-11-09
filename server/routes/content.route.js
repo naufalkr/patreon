@@ -1,5 +1,6 @@
 const { authjwt } = require("../middleware");
 const controller = require("../controllers/content.controller");
+const upload = require("../middleware/upload");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -13,6 +14,7 @@ module.exports = function(app) {
   app.post(
     "/api/content",
     [authjwt.verifyToken, authjwt.verifyUserId],
+    upload.array('files', 5), // Allow up to 5 files
     controller.create
   );
 

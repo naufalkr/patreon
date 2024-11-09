@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
+const path = require('path');
 
 // Create express app
 const app = express();
@@ -49,6 +49,9 @@ function initial(){
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the application." });
 });
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // routes
 require("./routes/auth.route")(app);
