@@ -16,7 +16,7 @@
         dense
         v-model="searchQuery"
         @click:append="search"
-        class="custom-search-field"
+        class="custom-search-field white--text"
       ></v-text-field>
       
       <v-spacer></v-spacer>
@@ -236,7 +236,7 @@ export default {
 
           {
             title: 'Liked posts',
-            link: '/liked-videos',
+            link: '/likedposts',
             icon: 'mdi-thumb-up'
           }
         ]

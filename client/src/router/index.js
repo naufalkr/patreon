@@ -35,12 +35,12 @@ const routes = [
     // meta: { requiresAuth: true }
   },
   {
-    path: '/liked-videos',
-    name: 'LikedVideos',
+    path: '/likedposts',
+    name: 'LikedPosts',
     components: {
       NavBar,
       default: () =>
-        import(/* webpackChunkName: "about" */ '../views/LikedVideo.vue')
+        import(/* webpackChunkName: "about" */ '../views/LikedPosts.vue')
     },
     // meta: { requiresAuth: true }
   },

@@ -194,8 +194,8 @@ export default {
 
 <style lang="scss">
 .main-content {
-  padding-left: 150px; /* Adjust the left padding */
-  padding-right: 150px; /* Adjust the right padding */
+  padding-left: 300px; /* Adjust the left padding */
+  padding-right: 300px; /* Adjust the right padding */
 }
 
 .post-card, .creator-card, .topic-card {
