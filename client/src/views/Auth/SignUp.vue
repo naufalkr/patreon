@@ -8,35 +8,43 @@
               <v-card-title class="text-center">Patreon</v-card-title>
               <v-card-subtitle class="mb-5">Create your Patreon account</v-card-subtitle>
               <v-card-text>
-                <form>
+                <form @submit.prevent="signup">
                   <v-text-field
+                    v-model="email"
                     label="Email"
                     class="mb-3"
                     outlined
                     dense
+                    required
                   ></v-text-field>
 
                   <v-text-field
+                    v-model="channelName"
                     label="Channel Name"
                     outlined
                     dense
+                    required
                   ></v-text-field>
 
                   <v-row>
                     <v-col cols="6">
                       <v-text-field
+                        v-model="password"
                         type="password"
                         label="Password"
                         outlined
                         dense
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6">
                       <v-text-field
+                        v-model="confirmPassword"
                         type="password"
                         label="Confirm"
                         outlined
                         dense
+                        required
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -47,10 +55,11 @@
                       small
                       class="pl-0 text-capitalize"
                       color="primary"
+                      @click="goToLogin"
                     >
                       Sign in instead
                     </v-btn>
-                    <v-btn class="primary" depressed>
+                    <v-btn class="primary" depressed type="submit">
                       Sign up
                     </v-btn>
                   </div>
@@ -81,6 +90,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "CreateAccount",
   data() {
@@ -90,6 +101,30 @@ export default {
       password: '',
       confirmPassword: ''
     };
+  },
+  methods: {
+    async signup() {
+      if (this.password !== this.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+      
+      try {
+        const response = await axios.post("http://localhost:8080/api/auth/signup", {
+          email: this.email,
+          username: this.channelName,
+          password: this.password
+        });
+
+        this.$router.push({name: 'SignIn'});
+        
+        if (response.status === 201) {
+          this.$router.push({name: 'Signin'});
+        }
+      } catch (error) {
+        alert(error.response.data.message || "Failed to sign up.");
+      }
+    }
   }
 };
 </script>
