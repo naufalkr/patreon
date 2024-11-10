@@ -1,6 +1,2 @@
 # Environment variables
 .env
-
-# Uploads folder content
-uploads/*
-!uploads/.gitkeep
