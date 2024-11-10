@@ -196,8 +196,7 @@ export default {
           params: {
             page: this.page,
             limit: this.limit,
-            userTier: 3, // Set based on user's subscription tier
-            visibility: 'public' // Add this parameter
+            userTier: 3 // Set based on user's subscription tier
           },
           headers: { 'x-access-token': localStorage.getItem('token') }
         });

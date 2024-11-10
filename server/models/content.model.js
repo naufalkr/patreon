@@ -45,11 +45,6 @@ module.exports = (sequelize, Sequelize) => {
     media_file: {
       type: Sequelize.STRING,
       allowNull: true
-    },
-    visibility: {
-      type: Sequelize.ENUM('public', 'private'),
-      allowNull: false,
-      defaultValue: 'public'
     }
   }, {
     timestamps: true,
