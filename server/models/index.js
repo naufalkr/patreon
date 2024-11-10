@@ -25,7 +25,7 @@ db.content = require("./content.model.js")(sequelize, Sequelize);
 db.comment = require("./comment.model.js")(sequelize, Sequelize);
 db.creatorProfile = require("./creatorProfile.model.js")(sequelize, Sequelize);
 db.tier = require("./tier.model.js")(sequelize, Sequelize);
-db.subcription = require("./subcription.model.js")(sequelize, Sequelize);
+db.subscription = require("./subscription.model.js")(sequelize, Sequelize);
 db.payment = require("./payment.model.js")(sequelize, Sequelize);
 db.like = require("./like.model.js")(sequelize, Sequelize);
 
@@ -43,17 +43,17 @@ db.creatorProfile.belongsTo(db.user, {foreignKey: 'user_id'});
 db.user.hasMany(db.tier, {foreignKey: 'user_id'});
 db.tier.belongsTo(db.user, {foreignKey: 'user_id'});
 
-db.tier.hasMany(db.subcription, {foreignKey: 'tier_id'});
-db.subcription.belongsTo(db.tier, {foreignKey: 'tier_id'});
+db.tier.hasMany(db.subscription, {foreignKey: 'tier_id'});
+db.subscription.belongsTo(db.tier, {foreignKey: 'tier_id'});
 
-db.user.hasMany(db.subcription, {foreignKey: 'subcriber_id'});
-db.subcription.belongsTo(db.user, {foreignKey: 'subcriber_id'});
+db.user.hasMany(db.subscription, {foreignKey: 'subcriber_id'});
+db.subscription.belongsTo(db.user, {foreignKey: 'subcriber_id'});
 
 db.user.hasMany(db.payment, {foreignKey: 'user_id'});
 db.payment.belongsTo(db.user, {foreignKey: 'user_id'});
 
-db.subcription.hasMany(db.payment, {foreignKey: 'subcription_id'});
-db.payment.belongsTo(db.subcription, {foreignKey: 'subcription_id'});
+db.subscription.hasMany(db.payment, {foreignKey: 'subcription_id'});
+db.payment.belongsTo(db.subscription, {foreignKey: 'subcription_id'});
 
 db.user.hasMany(db.content, { foreignKey: 'user_id' });
 db.content.belongsTo(db.user, { foreignKey: 'user_id' });

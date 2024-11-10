@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Subcription = sequelize.define("subcription", {
+  const Subscription = sequelize.define("subscription", {
     start_date: {
       type: Sequelize.DATE,
       allowNull: false,
@@ -15,5 +15,5 @@ module.exports = (sequelize, Sequelize) => {
     updatedAt: 'updated_at'
   });
 
-  return Subcription;
+  return Subscription;
 }

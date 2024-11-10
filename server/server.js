@@ -46,15 +46,17 @@ app.get("/", (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 
-const apiRoutes = require('./routes/api');
-app.use('/api', apiRoutes);
-
 // routes
 require("./routes/user.route")(app);
 require("./routes/content.route")(app);
 require("./routes/auth.route")(app);
 require("./routes/comment.route")(app);
 require('./routes/like.route')(app);
+require("./routes/creatorProfile.route")(app);
+require("./routes/subscription.route")(app);
+require("./routes/payment.route")(app);
+require("./routes/tier.route")(app);
+
 
 // Set port, listen for requests
 const PORT = process.env.PORT || 8080;

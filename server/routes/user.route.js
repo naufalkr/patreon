@@ -10,23 +10,32 @@ module.exports = function(app) {
     next();
   });
 
-  app.get("/api/test/all", controller.allAccess);
+  // initialize user as creator
+  app.post("/api/user/become-creator", [authjwt.verifyToken], controller.initializeCreator);
 
-  app.get(
-    "/api/test/user",
-    [authjwt.verifyToken],
-    controller.userBoard
-  );
+  // edit user profile
+  app.put("/api/user/profile", [authjwt.verifyToken], controller.updateUserProfile);
 
-  app.get(
-    "/api/test/mod",
-    [authjwt.verifyToken, authjwt.isModerator],
-    controller.moderatorBoard
-  );
+  // search for user that is a creator
+  app.get("/api/user/search", [authjwt.verifyToken], controller.searchCreators);
 
-  app.get(
-    "/api/test/admin",
-    [authjwt.verifyToken, authjwt.isAdmin],
-    controller.adminBoard
-  );
+  // app.get("/api/test/all", controller.allAccess);
+
+  // app.get(
+  //   "/api/test/user",
+  //   [authjwt.verifyToken],
+  //   controller.userBoard
+  // );
+
+  // app.get(
+  //   "/api/test/mod",
+  //   [authjwt.verifyToken, authjwt.isModerator],
+  //   controller.moderatorBoard
+  // );
+
+  // app.get(
+  //   "/api/test/admin",
+  //   [authjwt.verifyToken, authjwt.isAdmin],
+  //   controller.adminBoard
+  // );
 };
