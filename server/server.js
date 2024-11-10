@@ -50,6 +50,7 @@ require("./routes/user.route")(app);
 require("./routes/content.route")(app);
 require("./routes/auth.route")(app);
 require("./routes/comment.route")(app);
+require('./routes/like.route')(app);
 
 // Set port, listen for requests
 const PORT = process.env.PORT || 8080;

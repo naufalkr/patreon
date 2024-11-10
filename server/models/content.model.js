@@ -25,7 +25,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     like_count: {
       type: Sequelize.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
+      allowNull: false,
+      validate: {
+        min: 0  // Ensure like_count never goes below 0
+      }
     },
     comment_count: {
       type: Sequelize.INTEGER,

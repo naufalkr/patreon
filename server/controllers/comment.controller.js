@@ -1,7 +1,7 @@
-
 const db = require("../models");
 const Comment = db.comment;
 const Content = db.content;
+const User = db.user;
 
 exports.create = async (req, res) => {
   try {
@@ -16,12 +16,20 @@ exports.create = async (req, res) => {
       text: req.body.text
     });
 
+    // Fetch the user data and include it with the comment
+    const commentWithUser = await Comment.findByPk(comment.id, {
+      include: [{
+        model: db.user,
+        attributes: ['id', 'username']
+      }]
+    });
+
     // Increment comment_count
     await content.increment('comment_count');
 
     res.status(201).send({ 
       message: "Comment created successfully!", 
-      comment: comment 
+      comment: commentWithUser 
     });
   } catch (err) {
     res.status(500).send({ message: err.message });
@@ -34,7 +42,7 @@ exports.findAll = async (req, res) => {
       where: { content_id: req.params.contentId },
       include: [{
         model: db.user,
-        attributes: ['username']
+        attributes: ['id', 'username']
       }],
       order: [['created_at', 'DESC']]
     });

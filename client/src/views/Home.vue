@@ -21,31 +21,41 @@
           <v-col
             cols="12"
             v-for="(post, i) in posts"
-            :key="i"
+            :key="post.id"
             class="mx-auto"
           >
             <v-skeleton-loader type="card" :loading="loading">
               <div class="post-card">
-                <img v-if="post.image" :src="post.image" alt="Post Image" class="post-image" />
+                <img 
+                  v-if="post.media_file" 
+                  :src="`${baseUrl}/uploads/${post.media_file}`" 
+                  alt="Post Image" 
+                  class="post-image" 
+                />
                 <h4>{{ post.title }}</h4>
-                <p v-if="!post.showFullContent">{{ truncatedContent(post.content) }}</p>
-                <p v-if="post.showFullContent">{{ post.content }}</p>
+                <p v-if="!post.showFullContent">{{ truncatedContent(post.description) }}</p>
+                <p v-if="post.showFullContent">{{ post.description }}</p>
 
-                <!-- Show Read More button if content exceeds 100 words -->
-                <v-btn v-if="isContentLong(post.content) && !post.showFullContent" @click="toggleContent(post)" class="read-more-btn white--text">Read More</v-btn>
+                <v-btn v-if="isContentLong(post.description) && !post.showFullContent" 
+                       @click="toggleContent(post)" 
+                       class="read-more-btn white--text">
+                  Read More
+                </v-btn>
 
-                <p class="grey--text">{{ post.userId }} - {{ dateFormatter(post.date) }}</p>
+                <p class="grey--text">
+                  {{ post.user ? post.user.username : 'Unknown User' }} - 
+                  {{ dateFormatter(post.created_at) }}
+                </p>
                 
-                <!-- Like, Comment, and Share Buttons with Counts -->
                 <div class="post-actions">
                   <div class="left-actions">
-                    <v-btn icon small @click="likePost(i)">
-                      <v-icon color="#f4efe1">mdi-thumb-up-outline</v-icon>
-                      <span>{{ post.likeCount }}</span>
+                    <v-btn icon small @click="likePost(post)" :color="post.hasLiked ? 'red' : '#f4efe1'">
+                      <v-icon>{{ post.hasLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline' }}</v-icon>
+                      <span>{{ post.like_count }}</span>
                     </v-btn>
-                    <v-btn icon small @click="commentPost(i)" style="margin-left: 20px">
+                    <v-btn icon small @click="toggleComments(post)" style="margin-left: 20px">
                       <v-icon color="#f4efe1">mdi-comment-outline</v-icon>
-                      <span>{{ post.commentCount }}</span>
+                      <span>{{ post.comment_count }}</span>
                     </v-btn>
                   </div>
                   <div class="right-actions">
@@ -57,29 +67,37 @@
 
                 <!-- Comments section -->
                 <div v-if="post.showComments">
-                  <div v-for="(comment, index) in post.comments.slice(0, post.showingComments)" :key="index" class="comment">
+                  <div v-for="comment in post.comments" 
+                       :key="comment.id" 
+                       class="comment">
                     <v-avatar size="40">
-                      <img :src="comment.profileImage" alt="Profile">
+                      <img :src="defaultAvatar" alt="Profile">
                     </v-avatar>
-                    <div style = "margin-left: 20px; padding-top: 8px">
-                      <strong>{{ comment.username }}</strong>
+                    <div style="margin-left: 20px; padding-top: 8px">
+                      <strong>{{ comment.user ? comment.user.username : 'Unknown User' }}</strong>
                       <p>{{ comment.text }}</p>
                     </div>
                   </div>
-                  <v-btn v-if="post.comments.length > post.showingComments" @click="loadMoreComments(post)" class="load-more-btn white--text">Load More Comments</v-btn>
+                  
                   <!-- Comment Input Section -->
-                    <div v-if="post.showComments">
-                      <v-textarea
-                        v-model="post.newComment"
-                        label="Add your comment..."
-                        outlined
-                        auto-grow
-                        dense
-                        style = "margin-left: 20px; padding-top: 20px;"
-                        class="custom-textarea"
-                      ></v-textarea>
-                      <v-btn @click="submitComment(post)" class="submit-comment-btn white--text" :disabled="!post.newComment">Submit</v-btn>
-                    </div>
+                  <div v-if="post.showComments">
+                    <v-textarea
+                      v-model="post.newComment"
+                      label="Add your comment..."
+                      outlined
+                      auto-grow
+                      dense
+                      style="margin-left: 20px; padding-top: 20px;"
+                      class="custom-textarea"
+                    ></v-textarea>
+                    <v-btn 
+                      @click="submitComment(post)" 
+                      class="submit-comment-btn white--text" 
+                      :disabled="!post.newComment"
+                    >
+                      Submit
+                    </v-btn>
+                  </div>
                 </div>
               </div>
             </v-skeleton-loader>
@@ -120,6 +138,7 @@
 <script>
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
+import axios from 'axios';
 
 export default {
   name: 'Home',
@@ -128,165 +147,159 @@ export default {
     errored: false,
     posts: [],
     allPostsLoaded: false,
+    page: 1,
+    limit: 10,
+    baseUrl: 'http://localhost:8080', // Update with your backend URL
+    defaultAvatar: 'https://via.placeholder.com/40', // Default avatar image
   }),
   methods: {
-    loadPosts($state) {
+    async loadPosts($state) {
       if (this.allPostsLoaded) {
-        $state.complete();
+        $state && $state.complete();
         return;
       }
 
       this.loading = true;
       try {
-        const dummyPosts = [
-        { 
-          title: "Post Title 1", 
-          content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry.", 
-          userId: "User1", 
-          date: new Date(), 
-          image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+1", 
-          likeCount: 12, 
-          commentCount: 5, 
-          showFullContent: false,
-          showComments: false,
-          comments: [
-            { username: "User1", profileImage: "https://via.placeholder.com/40", text: "This is a comment." },
-            { username: "User2", profileImage: "https://via.placeholder.com/40", text: "This is another comment." },
-            { username: "User3", profileImage: "https://via.placeholder.com/40", text: "Great post!" },
-            { username: "User4", profileImage: "https://via.placeholder.com/40", text: "I totally agree." },
-            { username: "User5", profileImage: "https://via.placeholder.com/40", text: "Interesting." }
-          ],
-          showingComments: 4
-        },
-        {
-          title: "Post Title 2",
-          content: "This is another example of a post. It doesn't have too much text, but it's still relevant. The content here is concise and to the point. More details could be added here later. This is another example of a post. It doesn't have too much text, but it's still relevant. The content here is concise and to the point. More details could be added here later. This is another example of a post. It doesn't have too much text, but it's still relevant. The content here is concise and to the point. More details could be added here later. This is another example of a post. It doesn't have too much text, but it's still relevant. The content here is concise and to the point. More details could be added here later.",
-          userId: "User2",
-          date: new Date(),
-          image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+2",
-          likeCount: 25,
-          commentCount: 3,
-          showFullContent: false,
-          showComments: false,
-          comments: [
-            { username: "User1", profileImage: "https://via.placeholder.com/40", text: "Nice post!" },
-            { username: "User2", profileImage: "https://via.placeholder.com/40", text: "Agree with this!" },
-            { username: "User3", profileImage: "https://via.placeholder.com/40", text: "Short but sweet." }
-          ],
-          showingComments: 3
-        },
-        {
-          title: "Post Title 3",
-          content: "Here we discuss the importance of clean code and how following best practices can improve maintainability and scalability of your software projects. Always aim for clarity and simplicity in your codebase.",
-          userId: "User3",
-          date: new Date(),
-          image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+3",
-          likeCount: 32,
-          commentCount: 8,
-          showFullContent: false,
-          showComments: false,
-          comments: [
-            { username: "User1", profileImage: "https://via.placeholder.com/40", text: "This is such an important topic!" },
-            { username: "User2", profileImage: "https://via.placeholder.com/40", text: "Totally agree, clean code is key." },
-            { username: "User4", profileImage: "https://via.placeholder.com/40", text: "I need to revisit my codebase now." },
-            { username: "User5", profileImage: "https://via.placeholder.com/40", text: "Thanks for sharing this!" },
-            { username: "User6", profileImage: "https://via.placeholder.com/40", text: "Definitely, keeping things simple is the way to go." }
-          ],
-          showingComments: 4
-        },
-        {
-          title: "Post Title 4",
-          content: "Exploring the latest trends in AI and how machine learning is shaping the future of technology. From self-driving cars to intelligent virtual assistants, the potential is limitless.",
-          userId: "User4",
-          date: new Date(),
-          image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+4",
-          likeCount: 45,
-          commentCount: 6,
-          showFullContent: false,
-          showComments: false,
-          comments: [
-            { username: "User3", profileImage: "https://via.placeholder.com/40", text: "Exciting stuff happening in AI!" },
-            { username: "User4", profileImage: "https://via.placeholder.com/40", text: "AI will change everything." },
-            { username: "User5", profileImage: "https://via.placeholder.com/40", text: "Looking forward to the advancements!" },
-            { username: "User6", profileImage: "https://via.placeholder.com/40", text: "AI is the future." },
-            { username: "User7", profileImage: "https://via.placeholder.com/40", text: "Great to see this topic discussed." },
-            { username: "User8", profileImage: "https://via.placeholder.com/40", text: "Agreed! AI has so much potential." }
-          ],
-          showingComments: 4
-        },
-        {
-          title: "Post Title 5",
-          content: "A quick guide to getting started with Vue.js. Learn the basics of creating a new Vue project, components, and how to manage state effectively.",
-          userId: "User5",
-          date: new Date(),
-          image: "https://via.placeholder.com/350x150/3c3c3c/ffffff?text=Post+Image+5",
-          likeCount: 18,
-          commentCount: 4,
-          showFullContent: false,
-          showComments: false,
-          comments: [
-            { username: "User2", profileImage: "https://via.placeholder.com/40", text: "Great tutorial for beginners!" },
-            { username: "User3", profileImage: "https://via.placeholder.com/40", text: "I learned Vue recently, this post is very helpful." },
-            { username: "User4", profileImage: "https://via.placeholder.com/40", text: "Vue.js is awesome." },
-            { username: "User5", profileImage: "https://via.placeholder.com/40", text: "Glad you like it!" }
-          ],
-          showingComments: 4
-        }
-      ];
+        const response = await axios.get(`${this.baseUrl}/api/content`, {
+          params: {
+            page: this.page,
+            limit: this.limit,
+            userTier: 3 // Set based on user's subscription tier
+          }
+        });
 
-        if (dummyPosts.length) {
-          this.posts.push(...dummyPosts);
-          this.allPostsLoaded = true;
-          $state.complete();
+        const contents = response.data;
+        
+        if (contents.length) {
+          // Transform content data and add required properties
+          const transformedPosts = contents.map(content => ({
+            ...content,
+            showFullContent: false,
+            showComments: false,
+            comments: [],
+            newComment: '',
+            hasLiked: false
+          }));
+
+          // Check if user has liked each post
+          if (localStorage.getItem('token')) {
+            await Promise.all(transformedPosts.map(async (post) => {
+              try {
+                const response = await axios.get(
+                  `${this.baseUrl}/api/content/${post.id}/hasLiked`,
+                  { headers: { 'x-access-token': localStorage.getItem('token') } }
+                );
+                post.hasLiked = response.data.hasLiked;
+              } catch (error) {
+                console.error('Error checking like status:', error);
+              }
+            }));
+          }
+
+          this.posts.push(...transformedPosts);
+          this.page += 1;
+          $state && $state.loaded();
         } else {
-          $state.complete();
+          this.allPostsLoaded = true;
+          $state && $state.complete();
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error loading posts:', error);
         this.errored = true;
+        $state && $state.error();
       } finally {
         this.loading = false;
       }
     },
+
+    async toggleComments(post) {
+      post.showComments = !post.showComments;
+      if (post.showComments && post.comments.length === 0) {
+        try {
+          // Update to include user data in comments
+          const response = await axios.get(
+            `${this.baseUrl}/api/content/${post.id}/comments`,
+            {
+              headers: { 'x-access-token': localStorage.getItem('token') }
+            }
+          );
+          post.comments = response.data;
+        } catch (error) {
+          console.error('Error loading comments:', error);
+        }
+      }
+    },
+
+    async submitComment(post) {
+      if (!post.newComment.trim()) return;
+
+      try {
+        const response = await axios.post(
+          `${this.baseUrl}/api/content/${post.id}/comments`,
+          { text: post.newComment },
+          { headers: { 'x-access-token': localStorage.getItem('token') } }
+        );
+
+        // Add the new comment with user data from response
+        const newComment = response.data.comment;
+        post.comments.unshift(newComment);
+        post.comment_count++;
+        post.newComment = '';
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+      }
+    },
+
+    async likePost(post) {
+      if (!localStorage.getItem('token')) {
+        this.$router.push('/login');
+        return;
+      }
+  
+      try {
+        const response = await axios.post(
+          `${this.baseUrl}/api/content/${post.id}/like`,
+          {},
+          { headers: { 'x-access-token': localStorage.getItem('token') } }
+        );
+        
+        // Update the post's like status and count
+        post.hasLiked = response.data.liked;
+        post.like_count = response.data.likeCount;
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    },
+
+    // Existing utility methods
     dateFormatter(date) {
       return moment(date).fromNow();
     },
-    likePost(index) {
-      console.log(`Liked post at index ${index}`);
+
+    isContentLong(content) {
+      return content && content.split(' ').length > 65;
     },
-    commentPost(index) {
-      const post = this.posts[index];
-      post.showComments = !post.showComments; // Toggle comments visibility
+
+    truncatedContent(content) {
+      if (!content) return '';
+      const words = content.split(' ');
+      return words.slice(0, 65).join(' ') + (words.length > 65 ? '...' : '');
     },
+
+    toggleContent(post) {
+      post.showFullContent = !post.showFullContent;
+    },
+
     sharePost(index) {
       console.log(`Shared post at index ${index}`);
-    },
-    isContentLong(content) {
-      return content.split(' ').length > 65; // Adjusted to 65 words
-    },
-    truncatedContent(content) {
-      const words = content.split(' ');
-      return words.slice(0, 65).join(' ');
-    },
-    toggleContent(post) {
-      post.showFullContent = !post.showFullContent; // Toggle visibility of full content
-    },
-    loadMoreComments(post) {
-      post.showingComments += 4; // Load 4 more comments
-    },
-    submitComment(post) {
-      if (post.newComment.trim() !== "") {
-        // Add new comment to the post's comments array
-        post.comments.push({
-          username: "Current User",
-          profileImage: "https://via.placeholder.com/40", // Replace with user's profile image
-          text: post.newComment,
-        });
-        post.commentCount++; // Increase the comment count
-        post.newComment = ""; // Clear the input after submitting
-      }
     }
   },
+
+  mounted() {
+    this.loadPosts();
+  },
+
   components: {
     InfiniteLoading
   }
