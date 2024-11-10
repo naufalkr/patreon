@@ -9,6 +9,8 @@ run to install all the dependencies
 npm i
 ```
 
+initialize roles table in 'server.js' by uncommenting 'initialize()'
+
 create .env according to the .env.example files and your database settings, as of now we are using postgrest
 
 run the server.js

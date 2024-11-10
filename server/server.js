@@ -52,6 +52,10 @@ app.get("/", (req, res) => {
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.json());
+
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
 
 // routes
 require("./routes/auth.route")(app);

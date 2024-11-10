@@ -1,15 +1,36 @@
-exports.allAccess = (req, res) => {
-  res.status(200).send("Public Content.");
+const db = require('../models');
+const User = db.user;
+const CreatorProfile = db.creatorProfile;
+
+// Initialize user as creator
+exports.initializeCreator = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    user.is_creator = true;
+    await user.save();
+    res.send({ message: 'User is now a creator' });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };
 
-exports.userBoard = (req, res) => {
-  res.status(200).send("User Content.");
-};
+// Update user profile
+exports.updateUserProfile = async (req, res) => {
+  const { username, email, password, profile_image } = req.body;
+  try {
+    const user = await User.findByPk(req.userId);
+    if (!user) return res.status(404).send({ message: 'User not found' });
 
-exports.adminBoard = (req, res) => {
-  res.status(200).send("Admin Content.");
-};
+    user.username = username || user.username;
+    user.email = email || user.email;
+    if (password) user.password = password; // hash password in production
+    user.profile_image = profile_image || user.profile_picture;
 
-exports.moderatorBoard = (req, res) => {
-  res.status(200).send("Moderator Content.");
+    await user.save();
+    res.send({ message: 'User profile updated' });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };

@@ -8,11 +8,15 @@ module.exports = (sequelize, Sequelize) => {
     },
     password: {
       type: Sequelize.STRING
-    }
-    // profile_image: {
-    //   type: Sequelize.STRING,
-    //   allowNull: true,
-    // }
+    },
+    profile_image: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    is_creator: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    },
   });
   
   return User;

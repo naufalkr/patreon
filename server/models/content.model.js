@@ -37,16 +37,8 @@ module.exports = (sequelize, Sequelize) => {
     },
     tags: {
       type: Sequelize.ARRAY(Sequelize.STRING)
-    },
-    tier: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      defaultValue: 1,
-      validate: {
-        min: 1,
-        max: 3
-      }
     }
+
   }, {
     timestamps: true,
     createdAt: 'created_at',
