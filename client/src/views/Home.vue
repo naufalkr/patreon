@@ -26,12 +26,24 @@
           >
             <v-skeleton-loader type="card" :loading="loading">
               <div class="post-card">
-                <img 
-                  v-if="post.media_file" 
-                  :src="`${baseUrl}/uploads/${post.media_file}`" 
-                  alt="Post Image" 
-                  class="post-image" 
-                />
+                <div v-if="post.media_file" class="media-container">
+                  <img 
+                    v-if="isImage(post.media_file)" 
+                    :src="`${baseUrl}/uploads/${post.media_file}`" 
+                    alt="Post Image" 
+                    class="post-image" 
+                  />
+                  <video
+                    v-else-if="isVideo(post.media_file)"
+                    class="post-video"
+                    :ref="`video-${post.id}`"
+                    controls
+                    preload="metadata"
+                  >
+                    <source :src="`${baseUrl}/uploads/${post.media_file}`" :type="getVideoType(post.media_file)">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
                 <h4>{{ post.title }}</h4>
                 <p v-if="!post.showFullContent">{{ truncatedContent(post.description) }}</p>
                 <p v-if="post.showFullContent">{{ post.description }}</p>
@@ -272,6 +284,24 @@ export default {
       }
     },
 
+    isImage(filename) {
+      return /\.(jpg|jpeg|png|gif)$/i.test(filename);
+    },
+
+    isVideo(filename) {
+      return /\.(mp4|webm|mov)$/i.test(filename);
+    },
+
+    getVideoType(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const mimeTypes = {
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'mov': 'video/quicktime'
+      };
+      return mimeTypes[ext] || 'video/mp4';
+    },
+
     // Existing utility methods
     dateFormatter(date) {
       return moment(date).fromNow();
@@ -324,9 +354,24 @@ export default {
   overflow: hidden;
 }
 
+.media-container {
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.post-video {
+  width: 100%;
+  max-height: 500px;
+  background-color: #000;
+  border-radius: 8px 8px 0 0;
+}
+
 .post-image {
   width: 100%;
-  height: auto;
+  max-height: 500px;
+  object-fit: contain;
   border-radius: 8px 8px 0 0;
 }
 
@@ -456,5 +501,17 @@ h3.headline {
   background-color: #444444 !important; /* Set warna background button saat hover */
 }
 
+video::-webkit-media-controls-panel {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+video::-webkit-media-controls-play-button {
+  background-color: rgba(244, 239, 225, 0.8);
+  border-radius: 50%;
+}
+
+video::-webkit-media-controls-timeline {
+  background-color: rgba(244, 239, 225, 0.2);
+}
 
 </style>
