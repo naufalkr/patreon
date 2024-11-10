@@ -25,10 +25,6 @@ module.exports = (sequelize, Sequelize) => {
     text: {
       type: Sequelize.TEXT,
       allowNull: false
-    },
-    likes: {
-      type: Sequelize.INTEGER,
-      defaultValue: 0
     }
   }, {
     timestamps: true,

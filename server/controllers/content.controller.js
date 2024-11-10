@@ -1,9 +1,17 @@
 const db = require("../models");
 const Content = db.content;
-const ContentUrl = db.contentUrl;
+const User = db.user;
 
 exports.create = async (req, res) => {
   try {
+    // Validate request
+    if (!req.body.title) {
+      res.status(400).send({
+        message: "Content title cannot be empty!"
+      });
+      return;
+    }
+
     // Parse tags if they're sent as a string
     let tags = [];
     if (req.body.tags) {
@@ -15,36 +23,29 @@ exports.create = async (req, res) => {
       }
     }
 
+    // Handle uploaded file
+    let mediaFile = null;
+    if (req.file) {
+      mediaFile = req.file.filename;
+    }
+
     // Create content
-    const content = await Content.create({
+    const content = {
       user_id: req.userId,
       title: req.body.title,
       description: req.body.description,
       tags: tags,
-      tier: parseInt(req.body.tier) || 1
-    });
+      tier: parseInt(req.body.tier) || 1,
+      visibility: req.body.visibility || 'public', // Add visibility handling
+      media_file: mediaFile
+    };
 
-    // Handle uploaded files
-    if (req.files && req.files.length > 0) {
-      const contentUrls = req.files.map(file => ({
-        content_id: content.id,
-        url: `/uploads/${file.filename}`
-      }));
-      await ContentUrl.bulkCreate(contentUrls);
-    }
-
-    // Fetch the created content with its URLs
-    const contentWithUrls = await Content.findByPk(content.id, {
-      include: [ContentUrl]
-    });
-
-    res.status(201).send({ 
-      message: "Content created successfully!", 
-      content: contentWithUrls 
-    });
+    // Save Content in the database
+    const data = await Content.create(content);
+    res.send(data);
   } catch (err) {
     console.error('Error creating content:', err);
-    res.status(500).send({ 
+    res.status(500).send({
       message: err.message,
       stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
@@ -52,20 +53,33 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const visibility = req.query.visibility || 'public';
+  const offset = (page - 1) * limit;
+
   try {
-    const userTier = req.query.userTier || 1; // Get user's subscription tier from query
-    
     const contents = await Content.findAll({
-      include: [ContentUrl],
       where: {
+        visibility: visibility, // Filter by visibility
         tier: {
-          [db.Sequelize.Op.lte]: userTier // Only return content with tier <= user's tier
+          [db.Sequelize.Op.lte]: req.query.userTier || 1
         }
-      }
+      },
+      include: [{
+        model: User,
+        attributes: ['username', 'id']
+      }],
+      order: [['created_at', 'DESC']],
+      limit: limit,
+      offset: offset
     });
-    res.send(contents);
+
+    res.json(contents);
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    res.status(500).json({
+      message: err.message || "Some error occurred while retrieving contents."
+    });
   }
 };
 
@@ -73,9 +87,7 @@ exports.findOne = async (req, res) => {
   try {
     const userTier = req.query.userTier || 1; // Get user's subscription tier from query
     
-    const content = await Content.findByPk(req.params.id, {
-      include: [ContentUrl]
-    });
+    const content = await Content.findByPk(req.params.id);
     
     if (!content) {
       return res.status(404).send({ message: "Content not found" });
@@ -110,17 +122,13 @@ exports.update = async (req, res) => {
         });
       }
     }
-    
-    await content.update(req.body);
-    
-    if (req.body.urls) {
-      await ContentUrl.destroy({ where: { content_id: content.id }});
-      const contentUrls = req.body.urls.map(url => ({
-        content_id: content.id,
-        url: url
-      }));
-      await ContentUrl.bulkCreate(contentUrls);
+
+    // Handle uploaded file
+    if (req.file) {
+      req.body.media_file = req.file.filename;
     }
+
+    await content.update(req.body);
     
     res.send({ message: "Content updated successfully" });
   } catch (err) {

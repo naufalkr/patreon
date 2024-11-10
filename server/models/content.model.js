@@ -25,7 +25,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     like_count: {
       type: Sequelize.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
+      allowNull: false,
+      validate: {
+        min: 0  // Ensure like_count never goes below 0
+      }
     },
     comment_count: {
       type: Sequelize.INTEGER,
@@ -37,8 +41,16 @@ module.exports = (sequelize, Sequelize) => {
     },
     tags: {
       type: Sequelize.ARRAY(Sequelize.STRING)
+    },
+    media_file: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    visibility: {
+      type: Sequelize.ENUM('public', 'private'),
+      allowNull: false,
+      defaultValue: 'public'
     }
-
   }, {
     timestamps: true,
     createdAt: 'created_at',

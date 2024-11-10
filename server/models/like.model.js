@@ -1,5 +1,6 @@
+
 module.exports = (sequelize, Sequelize) => {
-  const ContentUrl = sequelize.define("content_urls", {
+  const Like = sequelize.define("like", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -10,17 +11,22 @@ module.exports = (sequelize, Sequelize) => {
       references: {
         model: 'contents',
         key: 'id'
-      }
+      },
+      allowNull: false
     },
-    url: {
-      type: Sequelize.STRING(500),
+    user_id: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
       allowNull: false
     }
   }, {
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: false
+    updatedAt: 'updated_at'
   });
 
-  return ContentUrl;
+  return Like;
 };
