@@ -6,16 +6,8 @@ const path = require('path');
 // Create express app
 const app = express();
 
-var corsOptions = {
-  origin: "http://localhost:8081"
-}
-
-app.use(cors(corsOptions));
-
-// Parse requests of content-type - application/json
+app.use(cors());
 app.use(bodyParser.json());
-
-// Parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./models");
@@ -54,11 +46,10 @@ app.get("/", (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // routes
-require("./routes/auth.route")(app);
 require("./routes/user.route")(app);
-require("./routes/content.route")(app);  // Add this line
-require("./routes/contentUrl.route")(app);  // Add this line
-require("./routes/comment.route")(app); // Add this line
+require("./routes/content.route")(app);
+require("./routes/auth.route")(app);
+require("./routes/comment.route")(app);
 
 // Set port, listen for requests
 const PORT = process.env.PORT || 8080;

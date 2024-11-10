@@ -46,6 +46,10 @@ module.exports = (sequelize, Sequelize) => {
         min: 1,
         max: 3
       }
+    },
+    media_file: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   }, {
     timestamps: true,

@@ -14,22 +14,23 @@ module.exports = function(app) {
   app.post(
     "/api/content",
     [authjwt.verifyToken, authjwt.verifyUserId],
-    upload.array('files', 5), // Allow up to 5 files
+    upload.single('media_file'), // Ensure the field name matches the form data
     controller.create
   );
 
   app.get("/api/content", controller.findAll);
   
-  app.get("/api/content", controller.findOne);
+  app.get("/api/content/:id", controller.findOne);
   
   app.put(
-    "/api/content",
+    "/api/content/:id",
     [authjwt.verifyToken, authjwt.verifyUserId],
+    upload.single('media_file'), // Ensure the field name matches the form data
     controller.update
   );
   
   app.delete(
-    "/api/id/content",
+    "/api/content/:id",
     [authjwt.verifyToken, authjwt.verifyUserId],
     controller.delete
   );

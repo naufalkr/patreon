@@ -22,7 +22,6 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.content = require("./content.model.js")(sequelize, Sequelize);
-db.contentUrl = require("./contentUrl.model.js")(sequelize, Sequelize);
 db.comment = require("./comment.model.js")(sequelize, Sequelize);
 
 db.role.belongsToMany(db.user, {
@@ -36,12 +35,9 @@ db.user.belongsToMany(db.role, {
 db.user.hasMany(db.content, { foreignKey: 'user_id' });
 db.content.belongsTo(db.user, { foreignKey: 'user_id' });
 
-db.content.hasMany(db.contentUrl, { foreignKey: 'content_id' });
-db.contentUrl.belongsTo(db.content, { foreignKey: 'content_id' });
-
+// Add comment relationships
 db.content.hasMany(db.comment, { foreignKey: 'content_id' });
 db.comment.belongsTo(db.content, { foreignKey: 'content_id' });
-
 db.user.hasMany(db.comment, { foreignKey: 'user_id' });
 db.comment.belongsTo(db.user, { foreignKey: 'user_id' });
 
