@@ -4,50 +4,58 @@ const User = db.user;
 
 exports.create = async (req, res) => {
   try {
+    console.log('Received request body:', req.body);
+    console.log('Received file:', req.file);
+    console.log('User ID from token:', req.userId);
+
     // Validate request
     if (!req.body.title) {
-      res.status(400).send({
+      return res.status(400).send({
         message: "Content title cannot be empty!"
       });
-      return;
     }
 
-    // Parse tags if they're sent as a string
+    // Parse tags
     let tags = [];
     if (req.body.tags) {
       try {
         tags = JSON.parse(req.body.tags);
       } catch (e) {
-        // If parsing fails, assume it's already an array or single value
-        tags = Array.isArray(req.body.tags) ? req.body.tags : [req.body.tags];
+        console.error('Error parsing tags:', e);
+        tags = [];
       }
     }
 
-    // Handle uploaded file
-    let mediaFile = null;
-    if (req.file) {
-      mediaFile = req.file.filename;
-    }
-
-    // Create content
+    // Create content object with all required fields
     const content = {
       user_id: req.userId,
       title: req.body.title,
-      description: req.body.description,
+      description: req.body.description || '',
+      upload_date: new Date(),
+      like_count: 0,
+      comment_count: 0,
+      view_count: 0,
       tags: tags,
       tier: parseInt(req.body.tier) || 1,
-      visibility: req.body.visibility || 'public', // Add visibility handling
-      media_file: mediaFile
+      visibility: (req.body.visibility || 'public').toLowerCase(),
+      media_file: req.file ? req.file.filename : null
     };
+
+    console.log('Creating content with:', content);
 
     // Save Content in the database
     const data = await Content.create(content);
-    res.send(data);
+    console.log('Content created:', data);
+
+    res.status(201).send({
+      message: "Content created successfully!",
+      data: data
+    });
   } catch (err) {
-    console.error('Error creating content:', err);
+    console.error('Error in create content:', err);
     res.status(500).send({
-      message: err.message,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+      message: err.message || "Some error occurred while creating the content.",
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
   }
 };

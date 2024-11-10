@@ -17,7 +17,7 @@
 
       <v-card-text>
         <ValidationObserver ref="form" v-slot="{ invalid }">
-          <form @submit.prevent="submit">
+          <form @submit.prevent="handleSubmit">
             <div class="text-center">
               <v-btn
                 icon
@@ -36,17 +36,17 @@
               ref="provider"
             >
               <v-file-input
-                @change="uploadVideo"
-                v-model="selectedFile"
-                accept="video/mp4"
-                placeholder="Pick a video"
+                @change="handleFileSelect"
+                v-model="formData.media_file"
+                accept="video/mp4,video/webm,video/mov,image/*"
+                :placeholder="'Pick a media file (image or video)'"
                 prepend-icon="mdi-attachment"
                 ref="fileInput"
                 style="color: #252525;"          
-              ></v-file-input >
+              ></v-file-input>
               <span v-if="errors.length" style="color: #252525;">
-        {{ errors[0] }}
-      </span> 
+                {{ errors[0] }}
+              </span> 
             </ValidationProvider>
 
             <v-progress-circular
@@ -54,30 +54,11 @@
               :rotate="360"
               :size="100"
               :width="15"
-              :value="value"
+              :value="uploadProgress"
               color="#252525"
             >
-              {{ value }}
+              {{ uploadProgress }}
             </v-progress-circular>
-
-            <div class="mt-6">
-              <v-divider></v-divider>
-              <h3 class="mt-4">Upload Image</h3>
-              <ValidationProvider
-                rules="required"
-                name="Image"
-              >
-                <v-file-input
-                  v-model="selectedImage"
-                  accept="image/*"
-                  placeholder="Pick an image"
-                  prepend-icon="mdi-attachment"
-                  class="mb-4"
-                ></v-file-input>
-              </ValidationProvider>
-
-              <v-divider></v-divider>
-            </div>
 
             <ValidationProvider
               v-slot="{ errors }"
@@ -130,17 +111,33 @@
 
             <ValidationProvider
               v-slot="{ errors }"
-              name="Category"
+              name="Tier"
               rules="required"
             >
               <v-select
-                :items="categoriesTitles"
+                :items="tierLevels"
                 :error-messages="errors"
                 filled
-                label="Membership Tier"
-                v-model="formData.category"
-                :loading="categoryLoading"
+                label="Content Tier"
+                v-model="formData.tier"
+                :hint="'Select the tier level required to access this content'"
+                persistent-hint
               ></v-select>
+            </ValidationProvider>
+
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="Tags"
+            >
+              <v-combobox
+                v-model="formData.tags"
+                :items="[]"
+                label="Add tags"
+                multiple
+                chips
+                filled
+                :error-messages="errors"
+              ></v-combobox>
             </ValidationProvider>
 
             <div class="mt-6 d-flex justify-space-between">
@@ -165,9 +162,8 @@
 </template>
 
 <script>
-// import myUpload from "vue-image-crop-upload";
+import ContentService from "@/services/ContentService";
 import VideoService from "@/services/VideoService";
-import CategoryService from "@/services/CategoryService";
 
 export default {
   name: "UploadModal",
@@ -181,22 +177,28 @@ export default {
       categoryLoading: false,
       value: 0,
       show: false,
-      categoriesTitles: ["Basic", "Family", "Friend of The Show", "Part of the Show"],
-      categories: [],
       visibilityOptions: ["Public", "Private"],
       selectedFile: null,
       selectedImage: null,
       uploadedText: "",
+      tierLevels: [
+        { text: 'Basic (Free)', value: 1 },
+        { text: 'Premium', value: 2 },
+        { text: 'VIP', value: 3 }
+      ],
       formData: {
         id: "",
         title: "",
         description: "",
-        category: "",
         visibility: "",
+        tier: 1,
+        tags: [],
+        media_file: null
       },
       imgDataUrl: "",
       url: "",
       headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
+      uploadProgress: 0,
     };
   },
   computed: {
@@ -234,22 +236,63 @@ export default {
       this.formData.description = video.description;
       this.url = `${process.env.VUE_APP_URL}/api/v1/videos/${video._id}/thumbnails`;
     },
+    async handleSubmit() {
+      try {
+        if (!this.formData.media_file) {
+          this.$notify({
+            type: 'error',
+            text: 'Please select a media file (image or video)'
+          });
+          return;
+        }
+
+        this.uploading = true;
+        const formData = new FormData();
+        
+        // Append media file
+        formData.append('media_file', this.formData.media_file);
+        
+        // Append other form data
+        formData.append('title', this.formData.title);
+        formData.append('description', this.formData.description);
+        formData.append('visibility', this.formData.visibility.toLowerCase());
+        formData.append('tier', this.formData.tier);
+        formData.append('tags', JSON.stringify(this.formData.tags));
+
+        const response = await ContentService.createContent(formData, {
+          onUploadProgress: (progressEvent) => {
+            this.uploadProgress = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100
+            );
+          }
+        });
+        
+        if (response.data) {
+          this.$emit('content-created', response.data);
+          this.closeModal();
+          this.$notify({
+            type: 'success',
+            text: 'Content uploaded successfully!'
+          });
+        }
+      } catch (error) {
+        console.error('Error uploading content:', error);
+        this.$notify({
+          type: 'error',
+          text: error.response?.data?.message || 'Error uploading content'
+        });
+      } finally {
+        this.uploading = false;
+        this.uploadProgress = 0;
+      }
+    },
     async submit() {
       if (!this.selectedImage || this.uploadedText.trim() === "") return;
       this.submitLoading = true;
 
-      // Find the selected category ID
-      const selectedCategory = this.categories.find(
-        (category) => category.title === this.formData.category
-      );
-      if (selectedCategory) {
-        this.formData.category = selectedCategory._id;
-      }
-
       const video = await VideoService.updateVideo(this.formData.id, {
         title: this.formData.title,
         description: this.formData.description,
-        categoryId: this.formData.category,
         status: this.formData.visibility.toLowerCase(),
       })
       .catch((err) => {
@@ -265,43 +308,33 @@ export default {
 
       this.$router.push(`/studio/videos?${new Date()}`);
     },
-    async getCategories() {
-      this.categoryLoading = true;
-      const categories = await CategoryService.getAll()
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => (this.categoryLoading = false));
-
-      this.categoriesTitles = categories.data.data.map((category) => category.title);
-      this.categories = categories.data.data;
-    },
     closeModal() {
       this.$emit("closeDialog");
     },
     selectFile() {
       this.$refs.fileInput.$refs.input.click();
     },
+    handleFileSelect(file) {
+      if (file) {
+        this.formData.media_file = file;
+      }
+    },
     resetForm() {
       this.formData = {
         id: "",
         title: "",
         description: "",
-        category: "",
         visibility: "",
+        tier: 1,
+        tags: [],
+        media_file: null
       };
-      this.selectedFile = null;
-      this.selectedImage = null;
-      this.uploadedText = "";
-      this.imgDataUrl = "";
-      this.show = false;
+      this.uploadProgress = 0;
+      this.uploading = false;
     },
   },
   components: {
     // myUpload,
-  },
-  created() {
-    this.getCategories();
   },
 };
 </script>
