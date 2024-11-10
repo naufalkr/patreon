@@ -54,11 +54,30 @@
                   Read More
                 </v-btn>
 
-                <p class="grey--text">
-                  {{ post.user ? post.user.username : 'Unknown User' }} - 
-                  {{ dateFormatter(post.created_at) }}
-                </p>
-                
+                <!-- Publisher info and timestamp -->
+                <div class="publisher-info">
+                  <v-avatar size="24" class="mr-2">
+                    <img :src="defaultAvatar" :alt="post.user.username">
+                  </v-avatar>
+                  <span class="username">{{ post.user.username }}</span>
+                  <v-icon small class="mx-2" color="grey">mdi-circle-small</v-icon>
+                  <span class="timestamp">{{ dateFormatter(post.created_at) }}</span>
+                </div>
+
+                <!-- Tags section -->
+                <div v-if="post.tags && post.tags.length" class="tags-container">
+                  <v-chip
+                    v-for="tag in post.tags"
+                    :key="tag"
+                    small
+                    class="mr-2 tag-chip"
+                    color="#3c3c3c"
+                    text-color="#f4efe1"
+                  >
+                    #{{ tag }}
+                  </v-chip>
+                </div>
+
                 <div class="post-actions">
                   <div class="left-actions">
                     <v-btn icon small @click="likePost(post)" :color="post.hasLiked ? 'red' : '#f4efe1'">
@@ -178,7 +197,8 @@ export default {
             page: this.page,
             limit: this.limit,
             userTier: 3 // Set based on user's subscription tier
-          }
+          },
+          headers: { 'x-access-token': localStorage.getItem('token') }
         });
 
         const contents = response.data;
@@ -304,7 +324,18 @@ export default {
 
     // Existing utility methods
     dateFormatter(date) {
-      return moment(date).fromNow();
+      if (!date) return '';
+      const now = moment();
+      const postDate = moment(date);
+      const diff = now.diff(postDate, 'days');
+
+      if (diff < 1) {
+        return postDate.fromNow(); // "a few seconds ago", "2 hours ago", etc.
+      } else if (diff < 7) {
+        return postDate.calendar(); // "Last Monday at 2:30 AM", etc.
+      } else {
+        return postDate.format('MMMM D, YYYY'); // "July 5, 2023"
+      }
     },
 
     isContentLong(content) {
@@ -512,6 +543,41 @@ video::-webkit-media-controls-play-button {
 
 video::-webkit-media-controls-timeline {
   background-color: rgba(244, 239, 225, 0.2);
+}
+
+.publisher-info {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  color: #f4efe1;
+  opacity: 0.8;
+  
+  .username {
+    font-weight: 500;
+    color: #f4efe1;
+  }
+  
+  .timestamp {
+    color: #f4efe1;
+    font-size: 0.9em;
+  }
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 16px 0;
+}
+
+.tag-chip {
+  font-size: 0.85em;
+  height: 24px !important;
+  
+  &:hover {
+    opacity: 0.8;
+    cursor: pointer;
+  }
 }
 
 </style>

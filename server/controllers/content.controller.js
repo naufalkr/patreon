@@ -45,14 +45,19 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   try {
-    const userTier = req.query.userTier || 1; // Get user's subscription tier from query
+    const userTier = req.query.userTier || 1;
     
     const contents = await Content.findAll({
       where: {
         tier: {
-          [db.Sequelize.Op.lte]: userTier // Only return content with tier <= user's tier
+          [db.Sequelize.Op.lte]: userTier
         }
-      }
+      },
+      include: [{
+        model: db.user,
+        attributes: ['id', 'username']  // Only include necessary user fields
+      }],
+      order: [['created_at', 'DESC']]  // Show newest posts first
     });
     res.send(contents);
   } catch (err) {
