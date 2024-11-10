@@ -14,6 +14,7 @@ router.put('/user/profile', userController.updateUserProfile);
 
 // Creator profile routes
 router.put('/creator/profile', creatorProfileController.updateCreatorProfile);
+router.get('/creators/search', userController.searchCreators);
 
 // CRUD for Tiers
 router.post('/tier', tierController.createTier);

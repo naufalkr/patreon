@@ -1,6 +1,6 @@
 const db = require('../models');
 const User = db.user;
-const CreatorProfile = db.creatorProfile;
+const { Op } = require('sequelize');
 
 // Initialize user as creator
 exports.initializeCreator = async (req, res) => {
@@ -30,6 +30,31 @@ exports.updateUserProfile = async (req, res) => {
 
     await user.save();
     res.send({ message: 'User profile updated' });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+// Search for creators
+exports.searchCreators = async (req, res) => {
+  const { query } = req.query; // e.g., ?query=artist
+
+  try {
+    const creators = await User.findAll({
+      where: {
+        is_creator: true,
+        [Op.or]: [
+          { username: { [Op.iLike]: `%${query}%` } }, // Search by username
+          { '$creatorProfile.bio$': { [Op.iLike]: `%${query}%` } } // Search by bio in creator profile
+        ]
+      },
+      include: [{
+        model: db.creatorProfile,
+        attributes: ['bio', 'banner']
+      }]
+    });
+
+    res.send(creators);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
