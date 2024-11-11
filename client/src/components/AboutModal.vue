@@ -6,9 +6,7 @@
         <v-card style="background-color: #252525; color: #f4efe1">
           <v-card-title class="text-h5">{{ aboutInfo.title }}</v-card-title>
           <v-card-text style="background-color: #252525; color: #f4efe1">
-            <ul>
-              <li v-for="(desc, idx) in aboutInfo.description" :key="idx">{{ desc }}</li>
-            </ul>
+          {{ aboutInfo.description }}
           </v-card-text>
           <v-card-actions>
             <v-btn style="border: 1px solid #252525; border-radius: 4px; padding: 10px; background-color: white; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);" @click="openAboutModal">Edit About Info</v-btn>
@@ -45,14 +43,13 @@
 
               <!-- About Description -->
               <ValidationProvider rules="required" v-slot="{ errors }">
-                <v-textarea
+                <v-text-field
                   v-model="aboutInfo.description"
-                  label="Description (separate with commas)"
+                  label="Description"
                   :error-messages="errors"
                   required
                   outlined
-                  rows="4"
-                ></v-textarea>
+                ></v-text-field>
               </ValidationProvider>
 
               <!-- Submit Button -->
@@ -73,6 +70,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "AboutModalManager",
   data() {
@@ -80,18 +78,30 @@ export default {
       aboutDialog: false,  // control modal visibility for About Info
       aboutSubmitLoading: false,
       aboutInfo: {
-        title: "Welcome to Our Channel",
-        description: [
-          "This channel is dedicated to providing quality content that educates and entertains.",
-          "We aim to foster a community where ideas and creativity flourish.",
-          "Our mission is to empower individuals through knowledge and engagement, inspiring a passion for lifelong learning.",
-          "Thank you for being a part of our journey!",
-          "If you have any questions or suggestions, feel free to reach out through our contact page."
-        ]
+        title: "Wel to Our Channel",
+        description: "We are a group of passionate creators who love to share our knowledge with the world."
       }
     };
   },
+  created() {
+    this.fetchBio();
+    // Fetch About Info from API or state
+    // this.aboutInfo = fetchAboutInfo();
+  },
   methods: {
+        async fetchBio() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/creator/profile",{
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        });
+        this.aboutInfo.title = response.data.bio;
+        this.aboutInfo.description = response.data.description;
+      } catch (error) {
+        console.error(error);
+      }
+    },
     // Open the About Modal for editing
     openAboutModal() {
       this.aboutDialog = true;
@@ -101,16 +111,22 @@ export default {
       this.aboutDialog = false;
     },
     // Submit the edited About info
-    submitAboutInfo() {
+    async submitAboutInfo() {
       this.aboutSubmitLoading = true;
-      const updatedDescription = this.aboutInfo.description.split(',').map(desc => desc.trim());
+      try {
+        await axios.put("http://localhost:8080/api/creator/profile", {
+          bio: this.aboutInfo.title,
+          description: this.aboutInfo.description
+        }, {
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
 
       // Save the updated about info here (API call or state update)
-      console.log("Updated About Info:", {
-        title: this.aboutInfo.title,
-        description: updatedDescription
-      });
-
       this.aboutSubmitLoading = false;
       this.closeAboutModal(); // Close the modal
     }

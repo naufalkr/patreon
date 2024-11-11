@@ -270,6 +270,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 export default {
@@ -343,7 +344,7 @@ export default {
     }
   ],
     aboutInfo: {
-      title: "Welcome to Our Channel",
+      title: " to Our Channel",
       description: [
         "This channel is dedicated to providing quality content that educates and entertains.",
         "We aim to foster a community where ideas and creativity flourish.",
@@ -358,7 +359,24 @@ export default {
   components: {
     InfiniteLoading
   },
+  created() {
+    this.fetchBio();
+    // this.fetchBanner();
+  },
   methods: {
+    async fetchBio() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/creator/profile",{
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        });
+        this.aboutInfo.title = response.data.bio;
+        this.aboutInfo.description = response.data.bio;
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async subscribe() {
       // if (!this.isAuthenticated) {
       //   this.signinDialog = true

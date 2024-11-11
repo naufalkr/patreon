@@ -64,8 +64,8 @@ db.comment.belongsTo(db.content, { foreignKey: 'content_id' });
 db.user.hasMany(db.comment, { foreignKey: 'user_id' });
 db.comment.belongsTo(db.user, { foreignKey: 'user_id' });
 
-db.tier.hasMany(db.content, { foreignKey: 'tier_id' });
-db.content.belongsTo(db.tier, { foreignKey: 'tier_id' });
+// db.tier.hasMany(db.content, { foreignKey: 'tier_id' });
+// db.content.belongsTo(db.tier, { foreignKey: 'tier_id' });
 // Add like relationships
 db.content.hasMany(db.like, { foreignKey: 'content_id' });
 db.like.belongsTo(db.content, { foreignKey: 'content_id' });

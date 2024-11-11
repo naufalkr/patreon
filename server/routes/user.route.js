@@ -11,7 +11,7 @@ module.exports = function(app) {
   });
 
   // initialize user as creator
-  app.post("/api/user/become-creator", [authjwt.verifyToken], controller.initializeCreator);
+  app.put("/api/user/become-creator", [authjwt.verifyToken], controller.initializeCreator);
 
   // edit user profile
   app.put("/api/user/profile", [authjwt.verifyToken], controller.updateUserProfile);
@@ -19,7 +19,13 @@ module.exports = function(app) {
   // search for user that is a creator
   app.get("/api/user/search", [authjwt.verifyToken], controller.searchCreators);
 
-  // app.get("/api/test/all", controller.allAccess);
+  // delete user
+  app.delete("/api/user", [authjwt.verifyToken], controller.deleteUser);
+
+  // get user 
+  app.get("/api/user", [authjwt.verifyToken], controller.getUser);
+
+  app.get("/api/test/all",[authjwt.verifyToken], controller.allAccess);
 
   // app.get(
   //   "/api/test/user",

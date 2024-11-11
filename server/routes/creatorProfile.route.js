@@ -9,4 +9,7 @@ module.exports = function(app) {
 
   // Edit creator profile (bio, banner)
   app.put("/api/creator/profile", [authjwt.verifyToken], creatorController.updateCreatorProfile);
+
+  // get creator profile
+  app.get("/api/creator/profile", [authjwt.verifyToken], creatorController.getCreatorProfile);
 };

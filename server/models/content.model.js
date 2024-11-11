@@ -42,6 +42,19 @@ module.exports = (sequelize, Sequelize) => {
     tags: {
       type: Sequelize.ARRAY(Sequelize.STRING)
     },
+    tier: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      validate: {
+        min: 1,
+        max: 3
+      },
+      references: {
+        model: 'tiers',
+        key: 'id'
+      },
+    },
     media_file: {
       type: Sequelize.STRING,
       allowNull: true

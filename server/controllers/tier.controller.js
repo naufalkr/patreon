@@ -16,12 +16,12 @@ exports.createTier = async (req, res) => {
   }
 };
 
-// Get a tier by ID
-exports.getTier = async (req, res) => {
+// Get all tiers related to the user
+exports.getAllTiers = async (req, res) => {
   try {
-    const tier = await Tier.findByPk(req.params.id);
-    if (!tier) return res.status(404).send({ message: 'Tier not found' });
-    res.send(tier);
+    const tiers = await Tier.findAll({ where: { user_id: req.userId } });
+    if (tiers.length === 0) return res.status(404).send({ message: 'No tiers found' });
+    res.send(tiers);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

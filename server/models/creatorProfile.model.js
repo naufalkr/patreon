@@ -4,10 +4,19 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     profile_banner: {
       type: Sequelize.STRING,
       allowNull: true,
-    }
+    },
+    sub_count: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
   },{
     timestamps: true,
     createdAt: 'created_at',

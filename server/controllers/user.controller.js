@@ -6,10 +6,25 @@ const { Op } = require('sequelize');
 exports.initializeCreator = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId);
-    if (!user) return res.status(404).send({ message: 'User not found' });
 
     user.is_creator = true;
     await user.save();
+
+    // create a creator profile
+    await db.creatorProfile.create({
+      user_id: req.userId, // Link the profile to the user
+      bio: "Here I am!", // Default bio
+      description: "I am a creator, hope you like it here!", // Default description
+      profile_banner: "https://example.com/your-image.jpg", // Default banner image URL
+    });
+
+    // create basic tier
+    await db.tier.create({
+      user_id: req.userId,
+      name: 'Basic',
+      description: "A basic tier",
+      price: 0,
+    });
     res.send({ message: 'User is now a creator' });
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -59,3 +74,32 @@ exports.searchCreators = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const result = await User.destroy({ where: { id: req.userId } });
+    if (result === 0) return res.status(404).send({ message: 'User not found' });
+    res.send({ message: 'User deleted' });
+  } catch (error) {
+    res.status(500).send({ message: error.message + req.userId });
+  }
+}
+
+
+exports.allAccess = async (req, res) => {
+  try {
+    const users = await User.findByPk(req.userId);
+    res.send(users);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+}
+
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+}

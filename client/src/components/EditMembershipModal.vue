@@ -22,9 +22,7 @@
             >Most popular</v-chip>
 
             <ul>
-              <li v-for="(benefit, idx) in membership.benefits" :key="idx" style="color: #f4efe1;">
-                {{ benefit }}
-              </li>
+              {{ membership.benefits}}
             </ul>
           </v-card-text>
 
@@ -118,6 +116,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "MembershipManager",
   data() {
@@ -128,44 +127,28 @@ export default {
         {
           title: "Basic",
           price: "FREE",
-          benefits: [
-            "Access to patron-only chat community on Discord",
-            "Ad-Free video episodes of the JBP",
-            "At least 1 JBP bonus video per month"
-          ],
+          benefits: "At least 1 JBP bonus video per month",
           isPopular: false,
         },
         {
           title: "Family",
           price: "$10/month",
-          benefits: [
-            "Includes Discord benefits",
-            "At least 2 JBP bonus videos per month",
+          benefits: 
             "1 personal vlog per month 🆕",
-            "Merch discounts"
-          ],
           isPopular: true,
         },
         {
           title: "Friend of the Show",
           price: "$25/month",
-          benefits: [
+          benefits: 
             "Includes Discord benefits",
-            "At least 4 JBP bonus videos per month",
-            "RSS audio feed of Patreon-exclusive episodes 🎧",
-            "Patron-only episodes of the JBN show 'Journey'"
-          ],
           isPopular: false,
         },
         {
           title: "Part of the Show",
           price: "$50/month",
-          benefits: [
+          benefits: 
             "An invitation to submit topics and questions for the JBP",
-            "Possible on-air call back from JBP 📞",
-            "Your name in the credits (if idea is chosen)",
-            "►PLUS everything in the Homies, Family and Friend of the Show tiers!!!"
-          ],
           isPopular: false,
         }
       ],
@@ -177,7 +160,35 @@ export default {
       }
     };
   },
+  created() {
+    this.fetchTierOptions();
+    // Fetch membership options from API here
+  },
   methods: {
+    async fetchTierOptions() {
+      try {
+        // Fetch membership options from API here
+        const response = await axios.get("http://localhost:8080/api/tier", {
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        });
+        console.log(response.data);
+        this.membershipOptions = [];
+
+        response.data.forEach((membership) => {
+          this.membershipOptions.push({
+            title: membership.name,
+            price: membership.price,
+            benefits: membership.description,
+            isPopular: false
+          });
+        });
+
+      } catch (error) {
+        console.error(error);
+      }
+    },
     // Open the modal for creating a new membership
     openCreateModal() {
       this.formData = {
@@ -212,8 +223,15 @@ export default {
       this.dialog = false;
     },
     // Delete a membership option
-    deleteMembership(index) {
-      this.membershipOptions.splice(index, 1);
+    async deleteMembership(index) {
+      await axios.delete("http://localhost:8080/api/tier", {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+        data: {
+          name: this.membershipOptions[index].title,
+        },
+      });
     }
   }
 };

@@ -270,6 +270,7 @@ import EditMembershipModal from '@/components/EditMembershipModal'
 import AboutModal from '@/components/AboutModal'
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
+import axios from 'axios';
 
 
 // import SubscribersModal from '@/components/SubscribersModal'
@@ -316,7 +317,7 @@ export default {
       // subscribed: true
     },
     {
-      title: "Family",
+      title: "Famil",
       price: "$10/month",
       benefits: [
         "Includes Discord benefits",
@@ -340,7 +341,7 @@ export default {
       // subscribed: false
     },
     {
-      title: "Part of the Show",
+      title: "Part of the Shoaaaaaw",
       price: "$50/month",
       benefits: [
         "An invitation to submit topics and questions for the JBP",
@@ -352,14 +353,10 @@ export default {
       // subscribed: false
     }
   ],
-    aboutInfo: {
-      title: "Welcome to Our Channel",
+  aboutInfo: {
+      title: "",
       description: [
-        "This channel is dedicated to providing quality content that educates and entertains.",
-        "We aim to foster a community where ideas and creativity flourish.",
-        "Our mission is to empower individuals through knowledge and engagement, inspiring a passion for lifelong learning.",
-        "Thank you for being a part of our journey!",
-        "If you have any questions or suggestions, feel free to reach out through our contact page."
+        
       ]
     }
   }),
@@ -373,7 +370,26 @@ export default {
 
     // SubscribersModal
   },
+  created() {
+    this.fetchUser()
+  },
   methods: {
+    async fetchUser() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/user",{
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        });
+        this.channel.channelName = response.data.username;
+        this.channel.channelUsername = response.data.username;
+        this.channel.photoUrl = response.data.profile_image;
+        this.channel.backgroundPhotoUrl = response.data.profile_banner || 'https://yt3.googleusercontent.com/7-79NaZvZMm1HVv_-RnasIoQny5YMRXP08Z8N2mYZyAXmxE_kAyiVObmT02-EY_9XV4J9ZHLxw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj';
+        this.channel.memberships = response.data.sub_count;
+      } catch (error) {
+        console.error(error);
+      }
+    },
     loadPosts($state) {
       if (this.allPostsLoaded) {
         $state.complete();

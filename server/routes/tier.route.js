@@ -11,7 +11,7 @@ module.exports = function(app) {
   app.post("/api/tier", [authjwt.verifyToken], tierController.createTier);
 
   // Get all tiers
-  app.get("/api/tier", [authjwt.verifyToken], tierController.getTier);
+  app.get("/api/tier", [authjwt.verifyToken], tierController.getAllTiers);
 
   // Update a specific tier
   app.put("/api/tier/:id", [authjwt.verifyToken], tierController.updateTier);
