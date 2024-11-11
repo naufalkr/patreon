@@ -23,7 +23,8 @@ module.exports = function(app) {
   app.delete("/api/user", [authjwt.verifyToken], controller.deleteUser);
 
   // get user 
-  app.get("/api/user", [authjwt.verifyToken], controller.getUser);
+  app.get("/api/user", controller.getUser);
+  app.get("/api/user/data", [authjwt.verifyToken], controller.getUserDataWithRelations);
 
   app.get("/api/test/all",[authjwt.verifyToken], controller.allAccess);
 

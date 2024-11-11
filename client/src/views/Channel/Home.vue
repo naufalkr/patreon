@@ -222,10 +222,10 @@
                             class="mb-2"
                           >Most popular</v-chip>
 
-                          <ul>
-                            <li v-for="(benefit, idx) in option.benefits" :key="idx" style="color: #f4efe1;">
-                              {{ benefit }}
-                            </li>
+                          <ul :key="idx" style="color: #f4efe1;">
+                            
+                              {{ option.benefits }}
+                            
                           </ul>
                         </v-card-text>
                         <v-card-actions class="justify-center">
@@ -255,8 +255,8 @@
                 <v-card-title style="color: #f4efe1;">About</v-card-title>
                 <v-card-text style="color: #f4efe1;">
                   <h3 style="color: #f4efe1;">{{ aboutInfo.title }}</h3>
-                  <p v-for="(text, idx) in aboutInfo.description" :key="idx" style="color: #f4efe1;">
-                    {{ text }}
+                  <p>
+                    {{ aboutInfo.description }}
                   </p>
                 </v-card-text>
               </v-card>
@@ -360,10 +360,40 @@ export default {
     InfiniteLoading
   },
   created() {
+    this.fetchUser();
     this.fetchBio();
     // this.fetchBanner();
   },
   methods: {
+    async fetchUser() {
+      try {
+        const response = await axios.get("http://localhost:8080/api/user/data",{
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        },
+      );
+        this.membershipOptions = [];
+        console.log(response.data);
+        this.channel.channelName = response.data.user[0].username;
+        this.channel.photoUrl = response.data.user[0].profile_image;
+
+        response.data.tiers.filter((tier) => tier.user_id === 1).forEach((tier) => {
+          this.membershipOptions.push({
+            title: tier.name,
+            price: tier.price,
+            benefits: tier.description,
+            isPopular: false
+          });
+        });
+
+        this.aboutInfo.title = response.data.creatorProfile.bio;
+        this.aboutInfo.description = response.data.creatorProfile.description;
+
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async fetchBio() {
       try {
         const response = await axios.get("http://localhost:8080/api/creator/profile",{

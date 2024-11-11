@@ -384,7 +384,7 @@ export default {
         this.channel.channelName = response.data.username;
         this.channel.channelUsername = response.data.username;
         this.channel.photoUrl = response.data.profile_image;
-        this.channel.backgroundPhotoUrl = response.data.background_image;
+        this.channel.backgroundPhotoUrl = response.data.profile_banner || 'https://yt3.googleusercontent.com/7-79NaZvZMm1HVv_-RnasIoQny5YMRXP08Z8N2mYZyAXmxE_kAyiVObmT02-EY_9XV4J9ZHLxw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj';
         this.channel.memberships = response.data.sub_count;
       } catch (error) {
         console.error(error);

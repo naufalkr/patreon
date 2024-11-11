@@ -1,5 +1,8 @@
 const db = require('../models');
 const User = db.user;
+const Tier = db.tier;
+const CreatorProfile = db.creatorProfile;
+
 const { Op } = require('sequelize');
 
 // Initialize user as creator
@@ -97,9 +100,42 @@ exports.allAccess = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    const user = await User.findByPk(req.userId);
+    const user = await User.findAll();
     res.send(user);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
+
+exports.getUserDataWithRelations = async (req, res) => {
+  try {
+    // Fetch user data
+    const user = await User.findAll({
+      attributes: ['id','username', 'profile_image']
+    });
+
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    // Fetch related tier data
+    const tiers = await Tier.findAll({
+      attributes: ['user_id','name', 'description', 'price']
+    });
+
+    // Fetch related creator profile data
+    const creatorProfile = await CreatorProfile.findOne({
+      attributes: ['user_id', 'bio', 'description', 'profile_banner']
+    });
+
+    // Combine the data into one response
+    res.send({
+      user,
+      tiers,
+      creatorProfile
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: error.message });
+  }
+};

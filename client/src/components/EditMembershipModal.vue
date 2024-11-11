@@ -205,16 +205,14 @@ export default {
       this.dialog = true;
     },
     // Handle form submission (create or update membership)
-    submit() {
+    async submit() {
       this.submitLoading = true;
-      const benefitsArray = this.formData.benefits.split(',').map(benefit => benefit.trim());
-      const membershipData = { ...this.formData, benefits: benefitsArray };
 
-      if (this.formData.title) {
-        // Update or create new membership here (API call or state update)
-        console.log("Membership data submitted:", membershipData);
-      }
-
+      await axios.post("http://localhost:8080/api/tier", this.formData, {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      });
       this.submitLoading = false;
       this.dialog = false; // Close the dialog
     },
