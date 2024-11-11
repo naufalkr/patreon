@@ -184,67 +184,84 @@ export default {
     defaultAvatar: 'https://via.placeholder.com/40', // Default avatar image
   }),
   methods: {
-    async loadPosts($state) {
-      if (this.allPostsLoaded) {
-        $state && $state.complete();
-        return;
-      }
+    
+async loadPosts($state) {
+    if (this.allPostsLoaded) {
+      $state && $state.complete();
+      return;
+    }
 
-      this.loading = true;
-      try {
-        const response = await axios.get(`${this.baseUrl}/api/content`, {
-          params: {
-            page: this.page,
-            limit: this.limit,
-            userTier: 3 // Set based on user's subscription tier
-          },
-          headers: { 'x-access-token': localStorage.getItem('token') }
-        });
+    this.loading = true;
+    try {
+      const response = await axios.get(`${this.baseUrl}/api/content`, {
+        params: {
+          page: this.page,
+          limit: this.limit,
+          userTier: 3 // Set based on user's subscription tier
+        },
+        headers: { 'x-access-token': localStorage.getItem('token') }
+      });
 
-        const contents = response.data;
-        
-        if (contents.length) {
-          // Transform content data and add required properties
-          const transformedPosts = contents.map(content => ({
-            ...content,
-            showFullContent: false,
-            showComments: false,
-            comments: [],
-            newComment: '',
-            hasLiked: false
+      let contents = response.data;
+
+      // Track unique post IDs directly in a Set to avoid duplicates
+      const existingIds = new Set(this.posts.map(post => post.id));
+      contents = contents.filter(post => !existingIds.has(post.id));
+
+      if (contents.length) {
+        // Transform content data and add required properties
+        const newPosts = contents.map(content => ({
+          ...content,
+          showFullContent: false,
+          showComments: false,
+          comments: [],
+          newComment: '',
+          hasLiked: false
+        }));
+
+        // Check if user has liked each post
+        if (localStorage.getItem('token')) {
+          await Promise.all(newPosts.map(async (post) => {
+            try {
+              const response = await axios.get(
+                `${this.baseUrl}/api/content/${post.id}/hasLiked`,
+                { headers: { 'x-access-token': localStorage.getItem('token') }
+              });
+              post.hasLiked = response.data.hasLiked;
+            } catch (error) {
+              console.error('Error checking like status:', error);
+            }
           }));
+        }
 
-          // Check if user has liked each post
-          if (localStorage.getItem('token')) {
-            await Promise.all(transformedPosts.map(async (post) => {
-              try {
-                const response = await axios.get(
-                  `${this.baseUrl}/api/content/${post.id}/hasLiked`,
-                  { headers: { 'x-access-token': localStorage.getItem('token') } }
-                );
-                post.hasLiked = response.data.hasLiked;
-              } catch (error) {
-                console.error('Error checking like status:', error);
-              }
-            }));
-          }
+        // Add unique new posts to the main posts array
+        this.posts.push(...newPosts);
 
-          this.posts.push(...transformedPosts);
-          this.page += 1;
-          $state && $state.loaded();
-        } else {
+        // Final deduplication to ensure no duplicates slipped in
+        this.posts = Array.from(new Map(this.posts.map(post => [post.id, post])).values());
+
+        // Check if fewer posts than limit were returned, marking the end of content
+        if (newPosts.length < this.limit) {
           this.allPostsLoaded = true;
           $state && $state.complete();
+        } else {
+          $state && $state.loaded();
         }
-      } catch (error) {
-        console.error('Error loading posts:', error);
-        this.errored = true;
-        $state && $state.error();
-      } finally {
-        this.loading = false;
-      }
-    },
 
+        // Increase page for next call
+        this.page += 1;
+      } else {
+        this.allPostsLoaded = true;
+        $state && $state.complete();
+      }
+    } catch (error) {
+      this.errored = true;
+      console.error('Error loading posts:', error);
+      $state && $state.error();
+    } finally {
+      this.loading = false;
+    }
+  },
     async toggleComments(post) {
       post.showComments = !post.showComments;
       if (post.showComments && post.comments.length === 0) {

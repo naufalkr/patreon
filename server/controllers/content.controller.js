@@ -1,11 +1,7 @@
 const db = require("../models");
 const Content = db.content;
-
 exports.create = async (req, res) => {
   try {
-<<<<<<< HEAD
-    // Parse tags if they're sent as a string
-=======
     console.log('Received request body:', req.body);
     console.log('Received file:', req.file);
     console.log('User ID from token:', req.userId);
@@ -18,7 +14,6 @@ exports.create = async (req, res) => {
     }
 
     // Parse tags
->>>>>>> 0ef3824ce756a512370338ec60802ed52afe658d
     let tags = [];
     if (req.body.tags) {
       try {
@@ -29,19 +24,8 @@ exports.create = async (req, res) => {
       }
     }
 
-<<<<<<< HEAD
-    // Handle uploaded file
-    let mediaFile = null;
-    if (req.file) {
-      mediaFile = req.file.filename;
-    }
-
-    // Create content
-    const content = await Content.create({
-=======
     // Create content object with all required fields
     const content = {
->>>>>>> 0ef3824ce756a512370338ec60802ed52afe658d
       user_id: req.userId,
       title: req.body.title,
       description: req.body.description || '',
@@ -51,20 +35,6 @@ exports.create = async (req, res) => {
       view_count: 0,
       tags: tags,
       tier: parseInt(req.body.tier) || 1,
-<<<<<<< HEAD
-      media_file: mediaFile
-    });
-
-    res.status(201).send({ 
-      message: "Content created successfully!", 
-      content: content 
-    });
-  } catch (err) {
-    console.error('Error creating content:', err);
-    res.status(500).send({ 
-      message: err.message,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-=======
       visibility: (req.body.visibility || 'public').toLowerCase(),
       media_file: req.file ? req.file.filename : null
     };
@@ -84,7 +54,6 @@ exports.create = async (req, res) => {
     res.status(500).send({
       message: err.message || "Some error occurred while creating the content.",
       error: process.env.NODE_ENV === 'development' ? err.stack : undefined
->>>>>>> 0ef3824ce756a512370338ec60802ed52afe658d
     });
   }
 };
